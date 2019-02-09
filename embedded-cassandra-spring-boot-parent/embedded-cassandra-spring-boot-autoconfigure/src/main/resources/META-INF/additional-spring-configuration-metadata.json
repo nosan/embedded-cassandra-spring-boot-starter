@@ -1,0 +1,17 @@
+{
+  "properties": [],
+  "hints": [
+    {
+      "name": "com.github.nosan.embedded.cassandra.artifact.url-factory",
+      "providers": [
+        {
+          "name": "class-reference",
+          "parameters": {
+            "target": "com.github.nosan.embedded.cassandra.local.artifact.UrlFactory"
+          }
+        }
+      ]
+    }
+  ]
+}
+

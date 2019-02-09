@@ -1,0 +1,19 @@
+version: "{build}"
+image: Visual Studio 2017
+
+build:
+  verbosity: detailed
+
+environment:
+  matrix:
+    - JAVA_HOME: C:/Program Files/Java/jdk1.8.0
+
+build_script:
+  - java -version
+  - mvnw.cmd -B clean install
+
+on_failure:
+  - cat **/**/target/surefire-reports/*-output.txt
+
+cache:
+  - C:/Users/appveyor/.m2

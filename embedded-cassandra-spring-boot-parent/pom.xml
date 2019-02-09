@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.github.nosan</groupId>
+        <artifactId>embedded-cassandra-spring-boot-project</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+    </parent>
+
+    <name>Embedded Cassandra Spring Boot Parent</name>
+
+    <artifactId>embedded-cassandra-spring-boot-parent</artifactId>
+
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>embedded-cassandra-spring-boot-autoconfigure</module>
+        <module>embedded-cassandra-spring-boot-starter</module>
+    </modules>
+
+
+</project>
