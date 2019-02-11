@@ -73,6 +73,7 @@ public class EmbeddedCassandraAutoConfiguration {
 	}
 
 	@Bean
+	@ConditionalOnMissingBean
 	public EmbeddedCassandraFactoryBean embeddedCassandra(CassandraFactory embeddedCassandraFactory) {
 		return new EmbeddedCassandraFactoryBean(embeddedCassandraFactory.create(), this.applicationContext);
 	}
