@@ -59,7 +59,7 @@ import com.github.nosan.embedded.cassandra.local.artifact.UrlFactory;
 @Configuration
 @EnableConfigurationProperties(EmbeddedCassandraProperties.class)
 @AutoConfigureBefore(CassandraAutoConfiguration.class)
-@ConditionalOnClass({Logger.class, ArchiveEntry.class, Yaml.class, Cassandra.class})
+@ConditionalOnClass({Cassandra.class, ArchiveEntry.class, Yaml.class, Logger.class})
 public class EmbeddedCassandraAutoConfiguration {
 
 	private final EmbeddedCassandraProperties properties;
@@ -73,7 +73,7 @@ public class EmbeddedCassandraAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean
+	@ConditionalOnMissingBean(Cassandra.class)
 	public EmbeddedCassandraFactoryBean embeddedCassandra(CassandraFactory embeddedCassandraFactory) {
 		return new EmbeddedCassandraFactoryBean(embeddedCassandraFactory.create(), this.applicationContext);
 	}
