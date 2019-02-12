@@ -1,6 +1,6 @@
 # Embedded Cassandra [Spring Boot] 
 [![Build Status OSX/Linux](https://img.shields.io/travis/nosan/embedded-cassandra-spring-boot/master.svg?logo=travis&logoColor=white&style=flat)](https://travis-ci.org/nosan/embedded-cassandra-spring-boot) [![Build Status Windows](https://img.shields.io/appveyor/ci/nosan/embedded-cassandra-spring-boot/master.svg?logo=appveyor&logoColor=white&style=flat)](https://ci.appveyor.com/project/nosan/embedded-cassandra-spring-boot)
-[![Maven Central](https://img.shields.io/maven-central/v/com.github.nosan/embedded-cassandra-spring-boot-starter.svg)](https://search.maven.org/search?q=g:com.github.nosan%20AND%20(a:embedded-cassandra-spring-boot-starter))
+[![Maven Central](https://img.shields.io/maven-central/v/com.github.nosan/embedded-cassandra-spring-boot-autoconfigure.svg)](https://search.maven.org/search?q=g:com.github.nosan%20AND%20(a:embedded-cassandra-spring-boot-autoconfigure))
 
 This project offers `EmbeddedCassandraAutoConfiguration` for [Embedded Cassandra](https://github.com/nosan/embedded-cassandra). 
 
