@@ -1,27 +1,34 @@
-# Embedded Cassandra [Spring Boot Starter] 
+# Embedded Cassandra [Spring Boot] 
 [![Build Status OSX/Linux](https://img.shields.io/travis/nosan/embedded-cassandra-spring-boot/master.svg?logo=travis&logoColor=white&style=flat)](https://travis-ci.org/nosan/embedded-cassandra-spring-boot) [![Build Status Windows](https://img.shields.io/appveyor/ci/nosan/embedded-cassandra-spring-boot/master.svg?logo=appveyor&logoColor=white&style=flat)](https://ci.appveyor.com/project/nosan/embedded-cassandra-spring-boot)
 [![Maven Central](https://img.shields.io/maven-central/v/com.github.nosan/embedded-cassandra-spring-boot-starter.svg)](https://search.maven.org/search?q=g:com.github.nosan%20AND%20(a:embedded-cassandra-spring-boot-starter))
 
-This project offers `EmbeddedCassandraAutoConfiguration` for
-[Embedded Cassandra](https://github.com/nosan/embedded-cassandra). To use it in
-your `Spring Boot` application, add a dependency on `com.github.nosan:embedded-cassandra-spring-boot-starter:${version}`.
+This project offers `EmbeddedCassandraAutoConfiguration` for [Embedded Cassandra](https://github.com/nosan/embedded-cassandra). 
 
-You can declare your own `CassandraFactory` or/and `ArtifactFactory` bean(s) to take control of the `Cassandra` instances configuration.
+You can declare your own `CassandraFactory` or/and `ArtifactFactory` bean(s) to take control of the `Cassandra` 
+instances configuration.
 
 If you want to know on which port(s) and address the `Cassandra` is running, get the following properties:
-- `com.github.nosan.embedded.cassandra.port`
-- `com.github.nosan.embedded.cassandra.ssl-port`
-- `com.github.nosan.embedded.cassandra.address`
+- `local.cassandra.port`
+- `local.cassandra.ssl-port`
+- `local.cassandra.address`
 
 
 #### Maven
 
 ```xml
+<dependencies>
 <dependency>
     <groupId>com.github.nosan</groupId>
-    <artifactId>embedded-cassandra-spring-boot-starter</artifactId>
+    <artifactId>embedded-cassandra-spring-boot-autoconfigure</artifactId>
     <version>${version}</version>
 </dependency>
+<dependency>
+    <groupId>com.github.nosan</groupId>
+    <artifactId>embedded-cassandra</artifactId>
+    <version>${embedded-cassandra.version}</version>
+</dependency>
+</dependencies>
+
 ```
 
 #### Issues
