@@ -50,11 +50,6 @@
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.github.nosan</groupId>
-                <artifactId>embedded-cassandra-spring-boot-starter</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter</artifactId>
                 <version>${spring-boot.version}</version>
