@@ -39,9 +39,9 @@ import com.github.nosan.embedded.cassandra.Settings;
  * <p>
  * After success start of {@link Cassandra}, the following properties:
  * <ul>
- * <ol>com.github.nosan.embedded.cassandra.port</ol>
- * <ol>com.github.nosan.embedded.cassandra.ssl-port</ol>
- * <ol>com.github.nosan.embedded.cassandra.address</ol>
+ * <ol>local.cassandra.port</ol>
+ * <ol>local.cassandra.ssl-port</ol>
+ * <ol>local.cassandra.address</ol>
  * </ul>
  * will be added to the {@link Environment}.
  *
@@ -95,10 +95,10 @@ class EmbeddedCassandraFactoryBean implements FactoryBean<Cassandra>, Initializi
 			int port = settings.getPort();
 			Integer sslPort = settings.getSslPort();
 			InetAddress address = settings.getRealAddress();
-			properties.put("com.github.nosan.embedded.cassandra.port", port);
-			properties.put("com.github.nosan.embedded.cassandra.address", address.getHostAddress());
+			properties.put("local.cassandra.port", port);
+			properties.put("local.cassandra.address", address.getHostAddress());
 			if (sslPort != null) {
-				properties.put("com.github.nosan.embedded.cassandra.ssl-port", sslPort);
+				properties.put("local.cassandra.ssl-port", sslPort);
 			}
 		}
 		if (context.getParent() != null) {
@@ -108,9 +108,9 @@ class EmbeddedCassandraFactoryBean implements FactoryBean<Cassandra>, Initializi
 
 	@SuppressWarnings("unchecked")
 	private static Map<String, Object> getProperties(MutablePropertySources sources) {
-		PropertySource<?> propertySource = sources.get("com.github.nosan.embedded.cassandra");
+		PropertySource<?> propertySource = sources.get("local.cassandra");
 		if (propertySource == null) {
-			propertySource = new MapPropertySource("com.github.nosan.embedded.cassandra", new LinkedHashMap<>());
+			propertySource = new MapPropertySource("local.cassandra", new LinkedHashMap<>());
 			sources.addFirst(propertySource);
 		}
 		return (Map<String, Object>) propertySource.getSource();

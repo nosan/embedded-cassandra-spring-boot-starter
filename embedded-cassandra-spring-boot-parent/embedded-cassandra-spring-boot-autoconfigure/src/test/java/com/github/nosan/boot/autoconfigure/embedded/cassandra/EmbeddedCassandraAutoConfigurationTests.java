@@ -45,6 +45,8 @@ import org.springframework.data.cassandra.config.CassandraClusterFactoryBean;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.ClassUtils;
 
+import com.github.nosan.embedded.cassandra.Cassandra;
+import com.github.nosan.embedded.cassandra.Settings;
 import com.github.nosan.embedded.cassandra.Version;
 import com.github.nosan.embedded.cassandra.local.LocalCassandraFactory;
 import com.github.nosan.embedded.cassandra.local.artifact.RemoteArtifactFactory;
@@ -125,7 +127,7 @@ class EmbeddedCassandraAutoConfigurationTests {
 	}
 
 	@Test
-	void portIsAvailableInParentContext() {
+	void propertiesAreAvailableInTheParentContext() {
 		try (ConfigurableApplicationContext parent = new AnnotationConfigApplicationContext()) {
 			parent.refresh();
 			this.context = new AnnotationConfigApplicationContext();
@@ -135,8 +137,8 @@ class EmbeddedCassandraAutoConfigurationTests {
 			this.context.refresh();
 
 			ConfigurableEnvironment environment = this.context.getEnvironment();
-			String port = environment.getProperty("com.github.nosan.embedded.cassandra.port");
-			String address = environment.getProperty("com.github.nosan.embedded.cassandra.address");
+			String port = environment.getProperty("local.cassandra.port");
+			String address = environment.getProperty("local.cassandra.address");
 			assertThat(port).isNotNull();
 			assertThat(address).isNotNull();
 		}
@@ -144,12 +146,12 @@ class EmbeddedCassandraAutoConfigurationTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	void clusterBeanUseEmbeddedPortAndAddress() {
+	void clusterUseEmbeddedPortAndAddress() {
 		load(ClusterConfiguration.class);
 
 		ConfigurableEnvironment environment = this.context.getEnvironment();
-		String port = environment.getProperty("com.github.nosan.embedded.cassandra.port");
-		String address = environment.getProperty("com.github.nosan.embedded.cassandra.address");
+		String port = environment.getProperty("local.cassandra.port");
+		String address = environment.getProperty("local.cassandra.address");
 		assertThat(port).isNotNull();
 		assertThat(address).isNotNull();
 
@@ -168,12 +170,12 @@ class EmbeddedCassandraAutoConfigurationTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	void clusterFactoryBeanUseEmbeddedPortAndAddress() {
+	void clusterFactoryBeanEmbeddedPortAndAddress() {
 		load(ClusterFactoryConfiguration.class);
 
 		ConfigurableEnvironment environment = this.context.getEnvironment();
-		String port = environment.getProperty("com.github.nosan.embedded.cassandra.port");
-		String address = environment.getProperty("com.github.nosan.embedded.cassandra.address");
+		String port = environment.getProperty("local.cassandra.port");
+		String address = environment.getProperty("local.cassandra.address");
 		assertThat(port).isNotNull();
 		assertThat(address).isNotNull();
 
@@ -185,6 +187,25 @@ class EmbeddedCassandraAutoConfigurationTests {
 		assertThat(contactPoints).isInstanceOf(Collection.class);
 		assertThat((Collection) contactPoints).contains(new InetSocketAddress(address, Integer.parseInt(port)));
 
+		try (Session session = cluster.connect()) {
+			session.execute("SELECT now() FROM system.local;");
+		}
+	}
+
+	@Test
+	void customCassandraBean() {
+		load(CustomCassandraConfiguration.class);
+
+		ConfigurableEnvironment environment = this.context.getEnvironment();
+		String port = environment.getProperty("local.cassandra.port");
+		String address = environment.getProperty("local.cassandra.address");
+		assertThat(port).isNull();
+		assertThat(address).isNull();
+
+		assertThat(this.context.getBeansOfType(Cassandra.class)).hasSize(1);
+		assertThat(this.context.getBeansOfType(Cluster.class)).hasSize(1);
+
+		Cluster cluster = this.context.getBean(Cluster.class);
 		try (Session session = cluster.connect()) {
 			session.execute("SELECT now() FROM system.local;");
 		}
@@ -205,8 +226,8 @@ class EmbeddedCassandraAutoConfigurationTests {
 	static class ClusterConfiguration {
 
 		@Bean(destroyMethod = "close")
-		public Cluster cluster(@Value("${com.github.nosan.embedded.cassandra.port}") int port,
-				@Value("${com.github.nosan.embedded.cassandra.address}") String address) {
+		public Cluster cluster(@Value("${local.cassandra.port}") int port,
+				@Value("${local.cassandra.address}") String address) {
 			return Cluster.builder().addContactPoint(address)
 					.withoutMetrics().withoutJMXReporting()
 					.withPort(port).build();
@@ -218,14 +239,31 @@ class EmbeddedCassandraAutoConfigurationTests {
 	static class ClusterFactoryConfiguration {
 
 		@Bean
-		public CassandraClusterFactoryBean cluster(@Value("${com.github.nosan.embedded.cassandra.port}") int port,
-				@Value("${com.github.nosan.embedded.cassandra.address}") String address) {
+		public CassandraClusterFactoryBean cluster(@Value("${local.cassandra.port}") int port,
+				@Value("${local.cassandra.address}") String address) {
 			CassandraClusterFactoryBean factoryBean = new CassandraClusterFactoryBean();
 			factoryBean.setPort(port);
 			factoryBean.setContactPoints(address);
 			return factoryBean;
 		}
 
+	}
+
+	@Configuration
+	static class CustomCassandraConfiguration {
+
+		@Bean(initMethod = "start", destroyMethod = "stop")
+		public Cassandra embeddedCassandra() {
+			return new LocalCassandraFactory().create();
+		}
+
+		@Bean(destroyMethod = "close")
+		public Cluster cluster(Cassandra cassandra) {
+			Settings settings = cassandra.getSettings();
+			return Cluster.builder().addContactPoints(settings.getRealAddress())
+					.withoutMetrics().withoutJMXReporting()
+					.withPort(settings.getPort()).build();
+		}
 	}
 
 	static class ExcludeCassandraPostProcessor implements BeanDefinitionRegistryPostProcessor {
