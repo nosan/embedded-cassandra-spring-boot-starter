@@ -35,7 +35,7 @@ If you want to know on which port(s) and address the `Cassandra` is running, get
 
 `Embedded Cassandra [Spring Boot]` uses GitHub's issue tracking system to report bugs and feature
 requests. If you want to raise an issue, please follow this [link](https://github.com/nosan/embedded-cassandra-spring-boot/issues)
-and use a predefined `GitHub` templates.
+and use predefined `GitHub` templates.
 
 Also see [CONTRIBUTING.md](CONTRIBUTING.md) if you wish to submit pull requests.
 
