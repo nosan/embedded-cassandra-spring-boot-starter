@@ -50,7 +50,7 @@ public class EmbeddedCassandraProperties {
 	/**
 	 * Cassandra Version.
 	 */
-	private String version = "3.11.3";
+	private String version = "3.11.4";
 
 	/**
 	 * Startup timeout.
