@@ -26,6 +26,7 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.slf4j.Logger;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.FactoryBean;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.AbstractDependsOnBeanFactoryPostProcessor;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -62,6 +63,8 @@ import com.github.nosan.embedded.cassandra.local.artifact.UrlFactory;
 @ConditionalOnClass({Cassandra.class, ArchiveEntry.class, Yaml.class, Logger.class})
 public class EmbeddedCassandraAutoConfiguration {
 
+	private static final String EMBEDDED_CASSANDRA = "embeddedCassandra";
+
 	private final EmbeddedCassandraProperties properties;
 
 	private final ApplicationContext applicationContext;
@@ -72,7 +75,7 @@ public class EmbeddedCassandraAutoConfiguration {
 		this.applicationContext = applicationContext;
 	}
 
-	@Bean
+	@Bean(EMBEDDED_CASSANDRA)
 	@ConditionalOnMissingBean(Cassandra.class)
 	public EmbeddedCassandraFactoryBean embeddedCassandra(CassandraFactory embeddedCassandraFactory) {
 		return new EmbeddedCassandraFactoryBean(embeddedCassandraFactory.create(), this.applicationContext);
@@ -129,7 +132,7 @@ public class EmbeddedCassandraAutoConfiguration {
 
 	/**
 	 * Additional configuration to ensure that {@link Cluster} and {@link CassandraClusterFactoryBean} beans depends on
-	 * the {@code embeddedCassandra} bean.
+	 * the {@link #EMBEDDED_CASSANDRA} bean.
 	 */
 	@Configuration
 	@ConditionalOnClass(Cluster.class)
@@ -141,7 +144,14 @@ public class EmbeddedCassandraAutoConfiguration {
 						EmbeddedCassandraClusterDependencyConfiguration.class.getClassLoader());
 
 		public EmbeddedCassandraClusterDependencyConfiguration() {
-			super(Cluster.class, getFactoryClass(), "embeddedCassandra");
+			super(Cluster.class, getFactoryClass(), EMBEDDED_CASSANDRA);
+		}
+
+		@Override
+		public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
+			if (beanFactory.containsBean(EMBEDDED_CASSANDRA)) {
+				super.postProcessBeanFactory(beanFactory);
+			}
 		}
 
 		private static Class<? extends FactoryBean<?>> getFactoryClass() {

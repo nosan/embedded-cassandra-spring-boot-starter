@@ -253,7 +253,7 @@ class EmbeddedCassandraAutoConfigurationTests {
 	static class CustomCassandraConfiguration {
 
 		@Bean(initMethod = "start", destroyMethod = "stop")
-		public Cassandra embeddedCassandra() {
+		public Cassandra customCassandra() {
 			return new LocalCassandraFactory().create();
 		}
 
