@@ -73,6 +73,6 @@ This project uses [Apache License 2.0](http://www.apache.org/licenses/LICENSE-2.
     com.github.nosan.embedded.cassandra.register-shutdown-hook=true#Register a shutdown hook with the JVM runtime.
     com.github.nosan.embedded.cassandra.startup-timeout=1m#Startup timeout.
     com.github.nosan.embedded.cassandra.topology-file=#Configuration file for data centers and rack names and to determine network topology so that requests are routed efficiently and allows the database to distribute replicas evenly.
-    com.github.nosan.embedded.cassandra.version=3.11.3#Cassandra Version.
+    com.github.nosan.embedded.cassandra.version=3.11.4#Cassandra Version.
     com.github.nosan.embedded.cassandra.working-directory=#Cassandra directory. If directory is not specified, then the temporary directory will be used.
 
