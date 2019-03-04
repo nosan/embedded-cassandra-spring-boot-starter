@@ -18,6 +18,7 @@
 
     <modules>
         <module>embedded-cassandra-spring-boot-autoconfigure</module>
+        <module>embedded-cassandra-spring-boot-starter</module>
     </modules>
 
 
