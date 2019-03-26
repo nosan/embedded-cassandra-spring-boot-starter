@@ -89,8 +89,8 @@ class EmbeddedCassandraFactoryBean implements FactoryBean<Cassandra>, Initializi
 
 	private static void setProperties(ApplicationContext context, Settings settings) {
 		if (context instanceof ConfigurableApplicationContext) {
-			MutablePropertySources sources = ((ConfigurableApplicationContext) context)
-					.getEnvironment().getPropertySources();
+			MutablePropertySources sources = ((ConfigurableApplicationContext) context).getEnvironment()
+					.getPropertySources();
 			Map<String, Object> properties = getProperties(sources);
 			int port = settings.getPort();
 			Integer sslPort = settings.getSslPort();

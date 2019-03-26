@@ -90,8 +90,8 @@ class EmbeddedCassandraAutoConfigurationTests {
 				"com.github.nosan.embedded.cassandra.jvm-options=-Dtest.property=property",
 				"com.github.nosan.embedded.cassandra.java-home=target/java",
 				"com.github.nosan.embedded.cassandra.artifact.directory=target/embedded-cassandra/artifact",
-				"com.github.nosan.embedded.cassandra.artifact.url-factory="
-						+ ClassUtils.getQualifiedName(MockUrlFactory.class),
+				"com.github.nosan.embedded.cassandra.artifact.url-factory=" + ClassUtils
+						.getQualifiedName(MockUrlFactory.class),
 				"com.github.nosan.embedded.cassandra.artifact.proxy.host=localhost",
 				"com.github.nosan.embedded.cassandra.artifact.proxy.port=80",
 				"com.github.nosan.embedded.cassandra.artifact.proxy.type=SOCKS",
@@ -132,8 +132,7 @@ class EmbeddedCassandraAutoConfigurationTests {
 			parent.refresh();
 			this.context = new AnnotationConfigApplicationContext();
 			this.context.setParent(parent);
-			this.context.register(EmbeddedCassandraAutoConfiguration.class,
-					ClusterConfiguration.class);
+			this.context.register(EmbeddedCassandraAutoConfiguration.class, ClusterConfiguration.class);
 			this.context.refresh();
 
 			ConfigurableEnvironment environment = this.context.getEnvironment();
@@ -228,9 +227,8 @@ class EmbeddedCassandraAutoConfigurationTests {
 		@Bean(destroyMethod = "close")
 		public Cluster cluster(@Value("${local.cassandra.port}") int port,
 				@Value("${local.cassandra.address}") String address) {
-			return Cluster.builder().addContactPoint(address)
-					.withoutMetrics().withoutJMXReporting()
-					.withPort(port).build();
+			return Cluster.builder().addContactPoint(address).withoutMetrics().withoutJMXReporting().withPort(port)
+					.build();
 		}
 
 	}
@@ -260,8 +258,7 @@ class EmbeddedCassandraAutoConfigurationTests {
 		@Bean(destroyMethod = "close")
 		public Cluster cluster(Cassandra cassandra) {
 			Settings settings = cassandra.getSettings();
-			return Cluster.builder().addContactPoints(settings.getRealAddress())
-					.withoutMetrics().withoutJMXReporting()
+			return Cluster.builder().addContactPoints(settings.getRealAddress()).withoutMetrics().withoutJMXReporting()
 					.withPort(settings.getPort()).build();
 		}
 
@@ -275,8 +272,7 @@ class EmbeddedCassandraAutoConfigurationTests {
 		}
 
 		@Override
-		public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory)
-				throws BeansException {
+		public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
 		}
 
 	}
