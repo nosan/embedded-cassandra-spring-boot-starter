@@ -84,14 +84,14 @@ class EmbeddedCassandraAutoConfigurationTests {
 				"com.github.nosan.embedded.cassandra.configuration-file=classpath:cassandra.yaml",
 				"com.github.nosan.embedded.cassandra.logback-file=classpath:logging.xml",
 				"com.github.nosan.embedded.cassandra.topology-file=classpath:topology.properties",
-				"com.github.nosan.embedded.cassandra.commit-log-archiving-file=" +
-						"classpath:commitlog_archiving.properties",
+				"com.github.nosan.embedded.cassandra.commit-log-archiving-file="
+						+ "classpath:commitlog_archiving.properties",
 				"com.github.nosan.embedded.cassandra.rack-file=classpath:rack.properties",
 				"com.github.nosan.embedded.cassandra.jvm-options=-Dtest.property=property",
 				"com.github.nosan.embedded.cassandra.java-home=target/java",
 				"com.github.nosan.embedded.cassandra.artifact.directory=target/embedded-cassandra/artifact",
-				"com.github.nosan.embedded.cassandra.artifact.url-factory=" +
-						ClassUtils.getQualifiedName(MockUrlFactory.class),
+				"com.github.nosan.embedded.cassandra.artifact.url-factory="
+						+ ClassUtils.getQualifiedName(MockUrlFactory.class),
 				"com.github.nosan.embedded.cassandra.artifact.proxy.host=localhost",
 				"com.github.nosan.embedded.cassandra.artifact.proxy.port=80",
 				"com.github.nosan.embedded.cassandra.artifact.proxy.type=SOCKS",
@@ -264,6 +264,7 @@ class EmbeddedCassandraAutoConfigurationTests {
 					.withoutMetrics().withoutJMXReporting()
 					.withPort(settings.getPort()).build();
 		}
+
 	}
 
 	static class ExcludeCassandraPostProcessor implements BeanDefinitionRegistryPostProcessor {
@@ -286,5 +287,7 @@ class EmbeddedCassandraAutoConfigurationTests {
 		public URL[] create(Version version) {
 			return new URL[0];
 		}
+
 	}
+
 }
