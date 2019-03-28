@@ -103,6 +103,7 @@ public class EmbeddedCassandraAutoConfiguration {
 		factory.setJmxPort(properties.getJmxPort());
 		factory.setRegisterShutdownHook(properties.isRegisterShutdownHook());
 		factory.setAllowRoot(properties.isAllowRoot());
+		factory.setDeleteWorkingDirectory(properties.isDeleteWorkingDirectory());
 		return factory;
 	}
 

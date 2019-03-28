@@ -115,6 +115,11 @@ public class EmbeddedCassandraProperties {
 	 */
 	private int jmxPort = 7199;
 
+	/**
+	 * Delete the working directory after success Cassandra stop or not.
+	 */
+	private boolean deleteWorkingDirectory = false;
+
 	public Resource getCommitLogArchivingFile() {
 		return this.commitLogArchivingFile;
 	}
@@ -225,6 +230,14 @@ public class EmbeddedCassandraProperties {
 
 	public void setArtifactDirectory(Path artifactDirectory) {
 		this.artifactDirectory = artifactDirectory;
+	}
+
+	public boolean isDeleteWorkingDirectory() {
+		return this.deleteWorkingDirectory;
+	}
+
+	public void setDeleteWorkingDirectory(boolean deleteWorkingDirectory) {
+		this.deleteWorkingDirectory = deleteWorkingDirectory;
 	}
 
 	/**

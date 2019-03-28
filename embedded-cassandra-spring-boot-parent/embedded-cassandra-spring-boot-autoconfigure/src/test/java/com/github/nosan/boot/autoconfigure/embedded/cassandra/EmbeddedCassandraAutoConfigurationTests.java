@@ -80,6 +80,7 @@ class EmbeddedCassandraAutoConfigurationTests {
 				"com.github.nosan.embedded.cassandra.allow-root=true",
 				"com.github.nosan.embedded.cassandra.jmx-port=8999",
 				"com.github.nosan.embedded.cassandra.register-shutdown-hook=true",
+				"com.github.nosan.embedded.cassandra.delete-working-directory=true",
 				"com.github.nosan.embedded.cassandra.startup-timeout=0s",
 				"com.github.nosan.embedded.cassandra.configuration-file=classpath:cassandra.yaml",
 				"com.github.nosan.embedded.cassandra.logback-file=classpath:logging.xml",
@@ -103,6 +104,7 @@ class EmbeddedCassandraAutoConfigurationTests {
 
 		assertThat(factory.getVersion()).isEqualTo(new Version(3, 11, 3));
 		assertThat(factory.isRegisterShutdownHook()).isTrue();
+		assertThat(factory.isDeleteWorkingDirectory()).isTrue();
 		assertThat(factory.isAllowRoot()).isTrue();
 		assertThat(factory.getJmxPort()).isEqualTo(8999);
 		assertThat(factory.getJvmOptions()).containsExactly("-Dtest.property=property");
