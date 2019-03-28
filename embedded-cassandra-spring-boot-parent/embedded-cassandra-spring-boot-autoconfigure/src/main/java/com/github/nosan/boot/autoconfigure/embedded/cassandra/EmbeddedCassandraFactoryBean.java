@@ -67,8 +67,11 @@ class EmbeddedCassandraFactoryBean implements FactoryBean<Cassandra>, Initializi
 	}
 
 	@Override
-	public void afterPropertiesSet() {
+	public void afterPropertiesSet() throws InterruptedException {
 		this.cassandra.start();
+		if (this.cassandra.getState() == Cassandra.State.START_INTERRUPTED) {
+			throw new InterruptedException("Cassandra launch has been interrupted.");
+		}
 		setProperties(this.applicationContext, this.cassandra.getSettings());
 	}
 
