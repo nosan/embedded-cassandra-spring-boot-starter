@@ -15,7 +15,7 @@
  */
 
 /**
- * Auto-configuration for embedded cassandra.
+ * Auto-configuration for an embedded Cassandra.
  */
 
 package com.github.nosan.boot.autoconfigure.embedded.cassandra;
