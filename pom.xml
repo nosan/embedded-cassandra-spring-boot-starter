@@ -38,7 +38,7 @@
         <assertj.version>3.12.2</assertj.version>
         <junit.jupiter.version>5.4.1</junit.jupiter.version>
         <checkstyle.version>8.18</checkstyle.version>
-        <spring-boot.version>2.1.3.RELEASE</spring-boot.version>
+        <spring-boot.version>2.1.4.RELEASE</spring-boot.version>
         <embedded-cassandra.version>1.4.3-SNAPSHOT</embedded-cassandra.version>
     </properties>
 
