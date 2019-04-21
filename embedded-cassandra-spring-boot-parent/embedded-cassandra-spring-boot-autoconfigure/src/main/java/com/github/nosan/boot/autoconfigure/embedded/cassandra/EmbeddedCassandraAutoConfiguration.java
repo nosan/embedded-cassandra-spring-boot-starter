@@ -20,12 +20,14 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.URL;
+import java.util.stream.Collectors;
 
 import com.datastax.driver.core.Cluster;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.slf4j.Logger;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.FactoryBean;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.AbstractDependsOnBeanFactoryPostProcessor;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
@@ -41,12 +43,12 @@ import org.springframework.core.io.Resource;
 import org.springframework.data.cassandra.config.CassandraClusterFactoryBean;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
-import org.yaml.snakeyaml.Yaml;
 
 import com.github.nosan.embedded.cassandra.Cassandra;
 import com.github.nosan.embedded.cassandra.CassandraFactory;
 import com.github.nosan.embedded.cassandra.Version;
 import com.github.nosan.embedded.cassandra.local.LocalCassandraFactory;
+import com.github.nosan.embedded.cassandra.local.WorkingDirectoryCustomizer;
 import com.github.nosan.embedded.cassandra.local.artifact.ArtifactFactory;
 import com.github.nosan.embedded.cassandra.local.artifact.RemoteArtifactFactory;
 import com.github.nosan.embedded.cassandra.local.artifact.UrlFactory;
@@ -60,7 +62,7 @@ import com.github.nosan.embedded.cassandra.local.artifact.UrlFactory;
 @Configuration
 @EnableConfigurationProperties(EmbeddedCassandraProperties.class)
 @AutoConfigureBefore(CassandraAutoConfiguration.class)
-@ConditionalOnClass({Cassandra.class, ArchiveEntry.class, Yaml.class, Logger.class})
+@ConditionalOnClass({Cassandra.class, ArchiveEntry.class, Logger.class})
 public class EmbeddedCassandraAutoConfiguration {
 
 	private static final String EMBEDDED_CASSANDRA = "embeddedCassandra";
@@ -83,27 +85,31 @@ public class EmbeddedCassandraAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public CassandraFactory embeddedCassandraFactory(
-			ArtifactFactory embeddedCassandraArtifactFactory) throws IOException {
+	public CassandraFactory embeddedCassandraFactory(ArtifactFactory embeddedCassandraArtifactFactory,
+			ObjectProvider<WorkingDirectoryCustomizer> workingDirectoryCustomizers) throws IOException {
 		LocalCassandraFactory factory = new LocalCassandraFactory();
 		EmbeddedCassandraProperties properties = this.properties;
+		factory.setJmxLocalPort(properties.getJmxLocalPort());
+		factory.setRpcPort(properties.getRpcPort());
+		factory.setPort(properties.getPort());
+		factory.setSslStoragePort(properties.getSslStoragePort());
+		factory.setStoragePort(properties.getStoragePort());
 		factory.setVersion(StringUtils.hasText(properties.getVersion())
 				? Version.parse(properties.getVersion()) : null);
 		factory.setArtifactFactory(embeddedCassandraArtifactFactory);
-		factory.setStartupTimeout(properties.getStartupTimeout());
 		factory.setWorkingDirectory(properties.getWorkingDirectory());
 		factory.setArtifactDirectory(properties.getArtifactDirectory());
 		factory.setConfigurationFile(getURL(properties.getConfigurationFile()));
 		factory.setJavaHome(properties.getJavaHome());
-		factory.setCommitLogArchivingFile(getURL(properties.getCommitLogArchivingFile()));
-		factory.setLogbackFile(getURL(properties.getLogbackFile()));
+		factory.setLoggingFile(getURL(properties.getLoggingFile()));
 		factory.setTopologyFile(getURL(properties.getTopologyFile()));
 		factory.setRackFile(getURL(properties.getRackFile()));
-		factory.getJvmOptions().addAll(properties.getJvmOptions());
-		factory.setJmxPort(properties.getJmxPort());
+		factory.setJvmOptions(properties.getJvmOptions());
 		factory.setRegisterShutdownHook(properties.isRegisterShutdownHook());
 		factory.setAllowRoot(properties.isAllowRoot());
 		factory.setDeleteWorkingDirectory(properties.isDeleteWorkingDirectory());
+		factory.setWorkingDirectoryCustomizers(workingDirectoryCustomizers.orderedStream()
+				.collect(Collectors.toList()));
 		return factory;
 	}
 
@@ -128,7 +134,7 @@ public class EmbeddedCassandraAutoConfiguration {
 	}
 
 	private static URL getURL(Resource resource) throws IOException {
-		return (resource != null && resource.exists()) ? resource.getURL() : null;
+		return (resource != null) ? resource.getURL() : null;
 	}
 
 	/**

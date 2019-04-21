@@ -39,7 +39,7 @@
         <junit.jupiter.version>5.4.1</junit.jupiter.version>
         <checkstyle.version>8.18</checkstyle.version>
         <spring-boot.version>2.1.4.RELEASE</spring-boot.version>
-        <embedded-cassandra.version>1.4.3-SNAPSHOT</embedded-cassandra.version>
+        <embedded-cassandra.version>2.0.0-SNAPSHOT</embedded-cassandra.version>
     </properties>
 
     <dependencyManagement>

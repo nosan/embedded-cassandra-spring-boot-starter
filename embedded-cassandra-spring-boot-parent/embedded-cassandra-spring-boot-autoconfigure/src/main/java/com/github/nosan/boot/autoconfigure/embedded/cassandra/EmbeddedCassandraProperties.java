@@ -53,11 +53,6 @@ public class EmbeddedCassandraProperties {
 	private String version = "3.11.4";
 
 	/**
-	 * Startup timeout.
-	 */
-	private Duration startupTimeout = Duration.ofMinutes(1);
-
-	/**
 	 * Cassandra directory. If directory is not specified, then the temporary directory
 	 * will be used.
 	 */
@@ -74,14 +69,9 @@ public class EmbeddedCassandraProperties {
 	private Resource configurationFile;
 
 	/**
-	 * Commit log archiving file.
+	 * Cassandra logging file.
 	 */
-	private Resource commitLogArchivingFile;
-
-	/**
-	 * Cassandra logback file.
-	 */
-	private Resource logbackFile;
+	private Resource loggingFile;
 
 	/**
 	 * Configuration file to determine which data centers and racks nodes belong to.
@@ -108,32 +98,76 @@ public class EmbeddedCassandraProperties {
 	/**
 	 * Whether to allow running Cassandra under a root user or not.
 	 */
-	private boolean allowRoot = false;
+	private boolean allowRoot = true;
+
+	/**
+	 * The native transport port to listen for the clients on.
+	 */
+	private Integer port;
+
+	/**
+	 * Thrift port for client connections.
+	 */
+	private Integer rpcPort;
+
+	/**
+	 * The port for inter-node communication.
+	 */
+	private Integer storagePort;
+
+	/**
+	 * The ssl port for inter-node communication.
+	 */
+	private Integer sslStoragePort;
 
 	/**
 	 * JMX port to listen on.
 	 */
-	private int jmxPort = 7199;
+	private Integer jmxLocalPort;
 
 	/**
-	 * Delete the working directory after success Cassandra stop or not.
+	 * Delete the working directory after success Cassandra stop.
 	 */
-	private boolean deleteWorkingDirectory = false;
+	private boolean deleteWorkingDirectory = true;
 
-	public Resource getCommitLogArchivingFile() {
-		return this.commitLogArchivingFile;
+	public Integer getPort() {
+		return this.port;
 	}
 
-	public void setCommitLogArchivingFile(Resource commitLogArchivingFile) {
-		this.commitLogArchivingFile = commitLogArchivingFile;
+	public void setPort(Integer port) {
+		this.port = port;
 	}
 
-	public int getJmxPort() {
-		return this.jmxPort;
+	public Integer getRpcPort() {
+		return this.rpcPort;
 	}
 
-	public void setJmxPort(int jmxPort) {
-		this.jmxPort = jmxPort;
+	public void setRpcPort(Integer rpcPort) {
+		this.rpcPort = rpcPort;
+	}
+
+	public Integer getStoragePort() {
+		return this.storagePort;
+	}
+
+	public void setStoragePort(Integer storagePort) {
+		this.storagePort = storagePort;
+	}
+
+	public Integer getSslStoragePort() {
+		return this.sslStoragePort;
+	}
+
+	public void setSslStoragePort(Integer sslStoragePort) {
+		this.sslStoragePort = sslStoragePort;
+	}
+
+	public Integer getJmxLocalPort() {
+		return this.jmxLocalPort;
+	}
+
+	public void setJmxLocalPort(Integer jmxLocalPort) {
+		this.jmxLocalPort = jmxLocalPort;
 	}
 
 	public boolean isRegisterShutdownHook() {
@@ -168,14 +202,6 @@ public class EmbeddedCassandraProperties {
 		this.version = version;
 	}
 
-	public Duration getStartupTimeout() {
-		return this.startupTimeout;
-	}
-
-	public void setStartupTimeout(Duration startupTimeout) {
-		this.startupTimeout = startupTimeout;
-	}
-
 	public Path getWorkingDirectory() {
 		return this.workingDirectory;
 	}
@@ -192,12 +218,12 @@ public class EmbeddedCassandraProperties {
 		this.configurationFile = configurationFile;
 	}
 
-	public Resource getLogbackFile() {
-		return this.logbackFile;
+	public Resource getLoggingFile() {
+		return this.loggingFile;
 	}
 
-	public void setLogbackFile(Resource logbackFile) {
-		this.logbackFile = logbackFile;
+	public void setLoggingFile(Resource loggingFile) {
+		this.loggingFile = loggingFile;
 	}
 
 	public Resource getRackFile() {

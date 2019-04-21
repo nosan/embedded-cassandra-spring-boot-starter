@@ -78,15 +78,17 @@ class EmbeddedCassandraAutoConfigurationTests {
 				"com.github.nosan.embedded.cassandra.artifact-directory=target/embedded-cassandra-artifact",
 				"com.github.nosan.embedded.cassandra.version=3.11.3",
 				"com.github.nosan.embedded.cassandra.allow-root=true",
-				"com.github.nosan.embedded.cassandra.jmx-port=8999",
+				"com.github.nosan.embedded.cassandra.jmx-local-port=7199",
+				"com.github.nosan.embedded.cassandra.port=9042",
+				"com.github.nosan.embedded.cassandra.storage-port=7000",
+				"com.github.nosan.embedded.cassandra.ssl-storage-port=7001",
+				"com.github.nosan.embedded.cassandra.rpc-port=9160",
 				"com.github.nosan.embedded.cassandra.register-shutdown-hook=true",
 				"com.github.nosan.embedded.cassandra.delete-working-directory=true",
 				"com.github.nosan.embedded.cassandra.startup-timeout=0s",
 				"com.github.nosan.embedded.cassandra.configuration-file=classpath:cassandra.yaml",
-				"com.github.nosan.embedded.cassandra.logback-file=classpath:logging.xml",
+				"com.github.nosan.embedded.cassandra.logging-file=classpath:logging.xml",
 				"com.github.nosan.embedded.cassandra.topology-file=classpath:topology.properties",
-				"com.github.nosan.embedded.cassandra.commit-log-archiving-file="
-						+ "classpath:commitlog_archiving.properties",
 				"com.github.nosan.embedded.cassandra.rack-file=classpath:rack.properties",
 				"com.github.nosan.embedded.cassandra.jvm-options=-Dtest.property=property",
 				"com.github.nosan.embedded.cassandra.java-home=target/java",
@@ -102,22 +104,23 @@ class EmbeddedCassandraAutoConfigurationTests {
 		assertThat(this.context.getBeansOfType(LocalCassandraFactory.class)).hasSize(1);
 		LocalCassandraFactory factory = this.context.getBean(LocalCassandraFactory.class);
 
-		assertThat(factory.getVersion()).isEqualTo(new Version(3, 11, 3));
+		assertThat(factory.getVersion()).isEqualTo(Version.parse("3.11.3"));
 		assertThat(factory.isRegisterShutdownHook()).isTrue();
 		assertThat(factory.isDeleteWorkingDirectory()).isTrue();
 		assertThat(factory.isAllowRoot()).isTrue();
-		assertThat(factory.getJmxPort()).isEqualTo(8999);
+		assertThat(factory.getJmxLocalPort()).isEqualTo(7199);
+		assertThat(factory.getPort()).isEqualTo(9042);
+		assertThat(factory.getRpcPort()).isEqualTo(9160);
+		assertThat(factory.getStoragePort()).isEqualTo(7000);
+		assertThat(factory.getSslStoragePort()).isEqualTo(7001);
 		assertThat(factory.getJvmOptions()).containsExactly("-Dtest.property=property");
-		assertThat(factory.getStartupTimeout()).isEqualTo(Duration.ZERO);
 		assertThat(factory.getWorkingDirectory()).isEqualTo(Paths.get("target/embedded-cassandra"));
 		assertThat(factory.getArtifactDirectory()).isEqualTo(Paths.get("target/embedded-cassandra-artifact"));
 		assertThat(factory.getJavaHome()).isEqualTo(Paths.get("target/java"));
-		assertThat(factory.getLogbackFile()).isNotNull().isEqualTo(getClass().getResource("/logging.xml"));
+		assertThat(factory.getLoggingFile()).isNotNull().isEqualTo(getClass().getResource("/logging.xml"));
 		assertThat(factory.getTopologyFile()).isNotNull().isEqualTo(getClass().getResource("/topology.properties"));
 		assertThat(factory.getRackFile()).isNotNull().isEqualTo(getClass().getResource("/rack.properties"));
 		assertThat(factory.getConfigurationFile()).isNotNull().isEqualTo(getClass().getResource("/cassandra.yaml"));
-		assertThat(factory.getCommitLogArchivingFile()).isNotNull()
-				.isEqualTo(getClass().getResource("/commitlog_archiving.properties"));
 		assertThat(factory.getArtifactFactory()).isInstanceOf(RemoteArtifactFactory.class);
 		RemoteArtifactFactory af = (RemoteArtifactFactory) factory.getArtifactFactory();
 		assertThat(af).isNotNull();
@@ -260,7 +263,7 @@ class EmbeddedCassandraAutoConfigurationTests {
 		@Bean(destroyMethod = "close")
 		public Cluster cluster(Cassandra cassandra) {
 			Settings settings = cassandra.getSettings();
-			return Cluster.builder().addContactPoints(settings.getRealAddress()).withoutMetrics().withoutJMXReporting()
+			return Cluster.builder().addContactPoints(settings.getAddress()).withoutMetrics().withoutJMXReporting()
 					.withPort(settings.getPort()).build();
 		}
 

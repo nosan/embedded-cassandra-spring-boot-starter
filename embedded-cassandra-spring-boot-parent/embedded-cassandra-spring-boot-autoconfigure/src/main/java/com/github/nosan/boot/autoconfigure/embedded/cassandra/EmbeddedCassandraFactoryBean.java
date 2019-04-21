@@ -67,11 +67,8 @@ class EmbeddedCassandraFactoryBean implements FactoryBean<Cassandra>, Initializi
 	}
 
 	@Override
-	public void afterPropertiesSet() throws InterruptedException {
+	public void afterPropertiesSet() {
 		this.cassandra.start();
-		if (this.cassandra.getState() == Cassandra.State.START_INTERRUPTED) {
-			throw new InterruptedException("Cassandra launch has been interrupted.");
-		}
 		setProperties(this.applicationContext, this.cassandra.getSettings());
 	}
 
@@ -96,13 +93,10 @@ class EmbeddedCassandraFactoryBean implements FactoryBean<Cassandra>, Initializi
 					.getPropertySources();
 			Map<String, Object> properties = getProperties(sources);
 			int port = settings.getPort();
-			Integer sslPort = settings.getSslPort();
-			InetAddress address = settings.getRealAddress();
+			InetAddress address = settings.getAddress();
 			properties.put("local.cassandra.port", port);
 			properties.put("local.cassandra.address", address.getHostAddress());
-			if (sslPort != null) {
-				properties.put("local.cassandra.ssl-port", sslPort);
-			}
+			settings.getSslPort().ifPresent(sslPort -> properties.put("local.cassandra.ssl-port", sslPort));
 		}
 		if (context.getParent() != null) {
 			setProperties(context.getParent(), settings);
