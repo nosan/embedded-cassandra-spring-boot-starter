@@ -48,8 +48,8 @@ This project uses [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2
 
 
 #### Properties
-
-    com.github.nosan.embedded.cassandra.allow-root=false#Whether to allow running Cassandra as a root or not.
+    
+    com.github.nosan.embedded.cassandra.allow-root=true#Whether to allow running Cassandra as a root or not.
     com.github.nosan.embedded.cassandra.artifact-directory=#Directory to extract an artifact.
     com.github.nosan.embedded.cassandra.artifact.connect-timeout=30s#Connection timeout to be used when opening a communications link to the resource referenced by URLConnection.
     com.github.nosan.embedded.cassandra.artifact.directory=#The directory to save an archive.
@@ -58,15 +58,18 @@ This project uses [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2
     com.github.nosan.embedded.cassandra.artifact.proxy.type=HTTP#The proxy type to use.
     com.github.nosan.embedded.cassandra.artifact.read-timeout=30s#Read timeout specifies the timeout when reading from InputStream when a connection is established to a resource.
     com.github.nosan.embedded.cassandra.artifact.url-factory=com.github.nosan.embedded.cassandra.local.artifact.DefaultUrlFactory#Factory class to determine URLs for downloading an archive.
-    com.github.nosan.embedded.cassandra.commit-log-archiving-file=#Commit log archiving file.
     com.github.nosan.embedded.cassandra.configuration-file=#Cassandra configuration file.
+    com.github.nosan.embedded.cassandra.delete-working-directory=#Delete the working directory after success Cassandra stop.
     com.github.nosan.embedded.cassandra.java-home=#Java home directory.
-    com.github.nosan.embedded.cassandra.jmx-port=7199#JMX port to listen on.
+    com.github.nosan.embedded.cassandra.jmx-local-port=#JMX port to listen on.
     com.github.nosan.embedded.cassandra.jvm-options=#JVM options that should be associated with Cassandra.
-    com.github.nosan.embedded.cassandra.logback-file=#Cassandra logback file.
+    com.github.nosan.embedded.cassandra.logging-file=#Cassandra logging file.
+    com.github.nosan.embedded.cassandra.port=#The native transport port to listen for the clients on.
     com.github.nosan.embedded.cassandra.rack-file=#Configuration file to determine which data centers and racks nodes belong to.
     com.github.nosan.embedded.cassandra.register-shutdown-hook=true#Register a shutdown hook with the JVM runtime.
-    com.github.nosan.embedded.cassandra.startup-timeout=1m#Startup timeout.
+    com.github.nosan.embedded.cassandra.rpc-port=#Thrift port for client connections.
+    com.github.nosan.embedded.cassandra.ssl-storage-port=#The ssl port for inter-node communication.
+    com.github.nosan.embedded.cassandra.storage-port=#The port for inter-node communication.
     com.github.nosan.embedded.cassandra.topology-file=#Configuration file for data centers and rack names and to determine network topology so that requests are routed efficiently and allows the database to distribute replicas evenly.
     com.github.nosan.embedded.cassandra.version=3.11.4#Cassandra Version.
     com.github.nosan.embedded.cassandra.working-directory=#Cassandra directory. If directory is not specified, then the temporary directory will be used.
