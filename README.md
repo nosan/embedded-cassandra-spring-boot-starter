@@ -20,7 +20,7 @@ If you want to know on which port(s) and address the `Cassandra` is running, get
     <dependency>
         <groupId>com.github.nosan</groupId>
         <artifactId>embedded-cassandra-spring-boot-starter</artifactId>
-        <version>${version}</version>
+        <version>1.0.0</version>
     </dependency>
 </dependencies>
 
