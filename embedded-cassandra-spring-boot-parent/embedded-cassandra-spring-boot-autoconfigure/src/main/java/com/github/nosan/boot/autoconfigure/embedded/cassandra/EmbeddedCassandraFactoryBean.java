@@ -37,13 +37,12 @@ import com.github.nosan.embedded.cassandra.Settings;
 /**
  * {@link FactoryBean} to register {@link Cassandra} bean.
  * <p>
- * After success start of {@link Cassandra}, the following properties:
+ * After the successful start of {@link Cassandra}, the following properties may be added to the {@link Environment}.
  * <ul>
  * <ol>local.cassandra.port</ol>
  * <ol>local.cassandra.ssl-port</ol>
  * <ol>local.cassandra.address</ol>
  * </ul>
- * will be added to the {@link Environment}.
  *
  * @author Dmytro Nosan
  * @since 0.0.1
@@ -92,11 +91,10 @@ class EmbeddedCassandraFactoryBean implements FactoryBean<Cassandra>, Initializi
 			MutablePropertySources sources = ((ConfigurableApplicationContext) context).getEnvironment()
 					.getPropertySources();
 			Map<String, Object> properties = getProperties(sources);
-			int port = settings.getPort();
-			InetAddress address = settings.getAddress();
-			properties.put("local.cassandra.port", port);
-			properties.put("local.cassandra.address", address.getHostAddress());
+			settings.getPort().ifPresent(port -> properties.put("local.cassandra.port", port));
 			settings.getSslPort().ifPresent(sslPort -> properties.put("local.cassandra.ssl-port", sslPort));
+			settings.getAddress().map(InetAddress::getHostAddress)
+					.ifPresent(host -> properties.put("local.cassandra.address", host));
 		}
 		if (context.getParent() != null) {
 			setProperties(context.getParent(), settings);
