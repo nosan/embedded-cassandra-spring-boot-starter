@@ -59,7 +59,7 @@ This project uses [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2
     com.github.nosan.embedded.cassandra.artifact.read-timeout=30s#Read timeout specifies the timeout when reading from InputStream when a connection is established to a resource.
     com.github.nosan.embedded.cassandra.artifact.url-factory=com.github.nosan.embedded.cassandra.local.artifact.DefaultUrlFactory#Factory class to determine URLs for downloading an archive.
     com.github.nosan.embedded.cassandra.configuration-file=#Cassandra configuration file.
-    com.github.nosan.embedded.cassandra.delete-working-directory=#Delete the working directory after success Cassandra stop.
+    com.github.nosan.embedded.cassandra.delete-working-directory=#Delete the working directory after the successful stop.
     com.github.nosan.embedded.cassandra.java-home=#Java home directory.
     com.github.nosan.embedded.cassandra.jmx-local-port=#JMX port to listen on.
     com.github.nosan.embedded.cassandra.jvm-options=#JVM options that should be associated with Cassandra.
