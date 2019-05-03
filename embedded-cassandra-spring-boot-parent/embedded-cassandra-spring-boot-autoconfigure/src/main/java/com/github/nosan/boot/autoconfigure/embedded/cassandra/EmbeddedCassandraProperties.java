@@ -93,7 +93,7 @@ public class EmbeddedCassandraProperties {
 	/**
 	 * Register a shutdown hook with the JVM runtime.
 	 */
-	private boolean registerShutdownHook = true;
+	private boolean registerShutdownHook = false;
 
 	/**
 	 * Whether to allow running Cassandra under a root user or not.
