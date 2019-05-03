@@ -12,8 +12,5 @@ build_script:
   - java -version
   - mvnw.cmd -B clean install
 
-on_failure:
-  - cat **/**/target/surefire-reports/*-output.txt
-
 cache:
   - C:/Users/appveyor/.m2
