@@ -9,6 +9,10 @@ matrix:
     - os: osx
       osx_image: xcode9.3
 
+before_install:
+  - java -version
+  - ./mvnw clean install -DskipTests=true -B -U -V
+
 script:
   - java -version
   - ./mvnw -B -U clean install
