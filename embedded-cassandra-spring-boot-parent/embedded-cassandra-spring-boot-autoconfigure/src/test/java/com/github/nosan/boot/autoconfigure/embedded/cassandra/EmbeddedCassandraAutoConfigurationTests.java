@@ -263,9 +263,9 @@ class EmbeddedCassandraAutoConfigurationTests {
 		@Bean(destroyMethod = "close")
 		public Cluster cluster(Cassandra cassandra) {
 			Settings settings = cassandra.getSettings();
-			return Cluster.builder().addContactPoints(settings.getRequiredAddress()).withoutMetrics()
+			return Cluster.builder().addContactPoints(settings.getAddress()).withoutMetrics()
 					.withoutJMXReporting()
-					.withPort(settings.getRequiredPort()).build();
+					.withPort(settings.getPort()).build();
 		}
 
 	}
