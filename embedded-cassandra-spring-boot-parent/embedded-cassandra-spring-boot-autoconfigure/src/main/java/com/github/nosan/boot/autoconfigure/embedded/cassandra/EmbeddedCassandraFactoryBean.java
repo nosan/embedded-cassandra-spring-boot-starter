@@ -29,7 +29,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
-import org.springframework.util.Assert;
 
 import com.github.nosan.embedded.cassandra.Cassandra;
 import com.github.nosan.embedded.cassandra.Settings;
@@ -54,8 +53,6 @@ class EmbeddedCassandraFactoryBean implements FactoryBean<Cassandra>, Initializi
 	private final ApplicationContext applicationContext;
 
 	EmbeddedCassandraFactoryBean(Cassandra cassandra, ApplicationContext applicationContext) {
-		Assert.notNull(cassandra, () -> "Cassandra must not be null");
-		Assert.notNull(applicationContext, () -> "Application Context must not be null");
 		this.cassandra = cassandra;
 		this.applicationContext = applicationContext;
 	}

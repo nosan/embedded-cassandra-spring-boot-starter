@@ -20,16 +20,23 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.URL;
+import java.util.Arrays;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.datastax.driver.core.Cluster;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.slf4j.Logger;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.FactoryBean;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.BeanFactoryUtils;
+import org.springframework.beans.factory.ListableBeanFactory;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.boot.autoconfigure.AbstractDependsOnBeanFactoryPostProcessor;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfiguration;
@@ -46,7 +53,6 @@ import org.springframework.util.StringUtils;
 
 import com.github.nosan.embedded.cassandra.Cassandra;
 import com.github.nosan.embedded.cassandra.CassandraFactory;
-import com.github.nosan.embedded.cassandra.Version;
 import com.github.nosan.embedded.cassandra.local.LocalCassandraFactory;
 import com.github.nosan.embedded.cassandra.local.WorkingDirectoryCustomizer;
 import com.github.nosan.embedded.cassandra.local.artifact.ArtifactFactory;
@@ -65,8 +71,6 @@ import com.github.nosan.embedded.cassandra.local.artifact.UrlFactory;
 @ConditionalOnClass({Cassandra.class, ArchiveEntry.class, Logger.class})
 public class EmbeddedCassandraAutoConfiguration {
 
-	private static final String EMBEDDED_CASSANDRA = "embeddedCassandra";
-
 	private final EmbeddedCassandraProperties properties;
 
 	private final ApplicationContext applicationContext;
@@ -77,7 +81,7 @@ public class EmbeddedCassandraAutoConfiguration {
 		this.applicationContext = applicationContext;
 	}
 
-	@Bean(EMBEDDED_CASSANDRA)
+	@Bean
 	@ConditionalOnMissingBean(Cassandra.class)
 	public EmbeddedCassandraFactoryBean embeddedCassandra(CassandraFactory embeddedCassandraFactory) {
 		return new EmbeddedCassandraFactoryBean(embeddedCassandraFactory.create(), this.applicationContext);
@@ -94,9 +98,7 @@ public class EmbeddedCassandraAutoConfiguration {
 		factory.setPort(properties.getPort());
 		factory.setSslStoragePort(properties.getSslStoragePort());
 		factory.setStoragePort(properties.getStoragePort());
-		factory.setVersion(StringUtils.hasText(properties.getVersion())
-				? Version.parse(properties.getVersion()) : null);
-		factory.setArtifactFactory(embeddedCassandraArtifactFactory);
+		factory.setVersion(properties.getVersion());
 		factory.setWorkingDirectory(properties.getWorkingDirectory());
 		factory.setArtifactDirectory(properties.getArtifactDirectory());
 		factory.setConfigurationFile(getURL(properties.getConfigurationFile()));
@@ -110,6 +112,7 @@ public class EmbeddedCassandraAutoConfiguration {
 		factory.setDeleteWorkingDirectory(properties.isDeleteWorkingDirectory());
 		factory.setWorkingDirectoryCustomizers(workingDirectoryCustomizers.orderedStream()
 				.collect(Collectors.toList()));
+		factory.setArtifactFactory(embeddedCassandraArtifactFactory);
 		return factory;
 	}
 
@@ -139,30 +142,55 @@ public class EmbeddedCassandraAutoConfiguration {
 
 	/**
 	 * Additional configuration to ensure that {@link Cluster} and {@link CassandraClusterFactoryBean} beans depends on
-	 * the {@link #EMBEDDED_CASSANDRA} bean.
+	 * {@link Cassandra} bean(s).
 	 */
 	@Configuration
 	@ConditionalOnClass(Cluster.class)
-	protected static class EmbeddedCassandraClusterDependencyConfiguration
-			extends AbstractDependsOnBeanFactoryPostProcessor {
-
-		private static final boolean factoryBeanClassPresent =
-				ClassUtils.isPresent("org.springframework.data.cassandra.config.CassandraClusterFactoryBean",
-						EmbeddedCassandraClusterDependencyConfiguration.class.getClassLoader());
-
-		public EmbeddedCassandraClusterDependencyConfiguration() {
-			super(Cluster.class, getFactoryClass(), EMBEDDED_CASSANDRA);
-		}
+	protected static class EmbeddedCassandraClusterDependencyConfiguration implements BeanFactoryPostProcessor {
 
 		@Override
 		public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
-			if (beanFactory.containsBean(EMBEDDED_CASSANDRA)) {
-				super.postProcessBeanFactory(beanFactory);
+			for (String beanName : getBeanNames(Cluster.class, getClusterFactoryBeanClass(), beanFactory)) {
+				BeanDefinition definition = getDefinition(beanName, beanFactory);
+				String[] dependencies = definition.getDependsOn();
+				for (String bean : getBeanNames(Cassandra.class, EmbeddedCassandraFactoryBean.class, beanFactory)) {
+					dependencies = StringUtils.addStringToArray(dependencies, bean);
+				}
+				definition.setDependsOn(dependencies);
 			}
 		}
 
-		private static Class<? extends FactoryBean<?>> getFactoryClass() {
-			if (factoryBeanClassPresent) {
+		private Set<String> getBeanNames(Class<?> beanClass, Class<?> factoryBeanClass,
+				ListableBeanFactory beanFactory) {
+			LinkedHashSet<String> names = new LinkedHashSet<>(Arrays.asList(getBeanNames(beanClass, beanFactory)));
+			if (factoryBeanClass != null) {
+				for (String name : getBeanNames(factoryBeanClass, beanFactory)) {
+					names.add(BeanFactoryUtils.transformedBeanName(name));
+				}
+			}
+			return names;
+		}
+
+		private String[] getBeanNames(Class<?> beanClass, ListableBeanFactory beanFactory) {
+			return BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, beanClass, true, false);
+		}
+
+		private BeanDefinition getDefinition(String beanName, ConfigurableListableBeanFactory beanFactory) {
+			try {
+				return beanFactory.getBeanDefinition(beanName);
+			}
+			catch (NoSuchBeanDefinitionException ex) {
+				BeanFactory parentBeanFactory = beanFactory.getParentBeanFactory();
+				if (parentBeanFactory instanceof ConfigurableListableBeanFactory) {
+					return getDefinition(beanName, (ConfigurableListableBeanFactory) parentBeanFactory);
+				}
+				throw ex;
+			}
+		}
+
+		private Class<?> getClusterFactoryBeanClass() {
+			if (ClassUtils.isPresent("org.springframework.data.cassandra.config.CassandraClusterFactoryBean",
+					getClass().getClassLoader())) {
 				return CassandraClusterFactoryBean.class;
 			}
 			return null;
