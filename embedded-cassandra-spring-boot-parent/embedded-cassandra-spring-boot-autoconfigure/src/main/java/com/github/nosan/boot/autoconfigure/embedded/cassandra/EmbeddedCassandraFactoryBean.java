@@ -91,9 +91,9 @@ class EmbeddedCassandraFactoryBean implements FactoryBean<Cassandra>, Initializi
 			MutablePropertySources sources = ((ConfigurableApplicationContext) context).getEnvironment()
 					.getPropertySources();
 			Map<String, Object> properties = getProperties(sources);
-			settings.getOptionalPort().ifPresent(port -> properties.put("local.cassandra.port", port));
-			settings.getOptionalSslPort().ifPresent(sslPort -> properties.put("local.cassandra.ssl-port", sslPort));
-			settings.getOptionalAddress().map(InetAddress::getHostAddress)
+			settings.port().ifPresent(port -> properties.put("local.cassandra.port", port));
+			settings.sslPort().ifPresent(sslPort -> properties.put("local.cassandra.ssl-port", sslPort));
+			settings.address().map(InetAddress::getHostAddress)
 					.ifPresent(host -> properties.put("local.cassandra.address", host));
 		}
 		if (context.getParent() != null) {
