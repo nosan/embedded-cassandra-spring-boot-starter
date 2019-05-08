@@ -10,7 +10,7 @@ environment:
 
 build_script:
   - java -version
-  - mvnw.cmd -B clean install
+  - mvnw.cmd -B -U clean install
 
 cache:
   - C:/Users/appveyor/.m2

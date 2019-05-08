@@ -11,7 +11,7 @@ matrix:
 
 script:
   - java -version
-  - ./mvnw -B clean install
+  - ./mvnw -B -U clean install
 
 cache:
   directories:
