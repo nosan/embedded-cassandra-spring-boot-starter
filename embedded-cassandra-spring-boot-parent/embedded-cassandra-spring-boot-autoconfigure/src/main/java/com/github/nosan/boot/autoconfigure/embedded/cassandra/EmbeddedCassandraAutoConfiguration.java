@@ -53,7 +53,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
@@ -73,13 +72,6 @@ import com.github.nosan.embedded.cassandra.local.artifact.UrlFactory;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Embedded Cassandra.
- * <p>
- * After the successful start of {@link Cassandra}, the following properties may be added to the {@link Environment}.
- * <ul>
- * <ol>local.cassandra.port</ol>
- * <ol>local.cassandra.ssl-port</ol>
- * <ol>local.cassandra.address</ol>
- * </ul>
  *
  * @author Dmytro Nosan
  * @since 0.0.1
