@@ -53,8 +53,7 @@ public class EmbeddedCassandraProperties {
 	private String version = "3.11.4";
 
 	/**
-	 * Cassandra directory. If directory is not specified, then the temporary directory
-	 * will be used.
+	 * Cassandra directory.
 	 */
 	private Path workingDirectory;
 
@@ -96,7 +95,7 @@ public class EmbeddedCassandraProperties {
 	private boolean registerShutdownHook = false;
 
 	/**
-	 * Whether to allow running Cassandra under a root user or not.
+	 * Whether to allow running Cassandra under root user.
 	 */
 	private boolean allowRoot = true;
 

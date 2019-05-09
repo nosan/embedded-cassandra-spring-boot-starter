@@ -194,6 +194,7 @@ class EmbeddedCassandraAutoConfigurationTests {
 			ctx.register(config);
 		}
 		TestPropertyValues.of(props).applyTo(ctx);
+		ctx.registerShutdownHook();
 		ctx.register(EmbeddedCassandraAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class);
 		ctx.refresh();
 		this.context = ctx;

@@ -17,7 +17,6 @@
 package com.github.nosan.boot.autoconfigure.embedded.cassandra;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.URL;
@@ -151,9 +150,9 @@ public class EmbeddedCassandraAutoConfiguration {
 					.getPropertySources();
 			Map<String, Object> properties = getProperties(sources);
 			settings.port().ifPresent(port -> properties.put("local.cassandra.port", port));
-			settings.sslPort().ifPresent(sslPort -> properties.put("local.cassandra.ssl-port", sslPort));
-			settings.address().map(InetAddress::getHostAddress)
-					.ifPresent(host -> properties.put("local.cassandra.address", host));
+			settings.sslPort().ifPresent(port -> properties.put("local.cassandra.ssl-port", port));
+			settings.rpcPort().ifPresent(port -> properties.put("local.cassandra.rpc-port", port));
+			settings.address().ifPresent(host -> properties.put("local.cassandra.address", host.getHostAddress()));
 		}
 		if (context.getParent() != null) {
 			setProperties(context.getParent(), settings);
