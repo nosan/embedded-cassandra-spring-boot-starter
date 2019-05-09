@@ -21,15 +21,16 @@ import java.net.Proxy;
 import java.net.URL;
 import java.nio.file.Paths;
 import java.time.Duration;
-import java.util.Collection;
 
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Session;
+import com.datastax.oss.driver.api.core.CqlSession;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledOnJre;
 import org.junit.jupiter.api.condition.JRE;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
@@ -42,7 +43,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.data.cassandra.config.CassandraClusterFactoryBean;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.ClassUtils;
 
 import com.github.nosan.embedded.cassandra.Cassandra;
@@ -60,6 +60,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dmytro Nosan
  */
 @EnabledOnJre(JRE.JAVA_8)
+@SuppressWarnings("unchecked")
 class EmbeddedCassandraAutoConfigurationTests {
 
 	private AnnotationConfigApplicationContext context;
@@ -72,7 +73,7 @@ class EmbeddedCassandraAutoConfigurationTests {
 	}
 
 	@Test
-	void setProperties() {
+	void configurePropeprties() {
 		load(ExcludeCassandraPostProcessor.class,
 				"com.github.nosan.embedded.cassandra.working-directory=target/embedded-cassandra",
 				"com.github.nosan.embedded.cassandra.artifact-directory=target/embedded-cassandra-artifact",
@@ -149,48 +150,28 @@ class EmbeddedCassandraAutoConfigurationTests {
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	void clusterUseEmbeddedPortAndAddress() {
 		load(ClusterConfiguration.class);
-
-		ConfigurableEnvironment environment = this.context.getEnvironment();
-		String port = environment.getProperty("local.cassandra.port");
-		String address = environment.getProperty("local.cassandra.address");
-		assertThat(port).isNotNull();
-		assertThat(address).isNotNull();
-
 		assertThat(this.context.getBeansOfType(Cluster.class)).hasSize(1);
 		Cluster cluster = this.context.getBean(Cluster.class);
-
-		Object manager = ReflectionTestUtils.getField(cluster, "manager");
-		Object contactPoints = ReflectionTestUtils.getField(manager, "contactPoints");
-		assertThat(contactPoints).isInstanceOf(Collection.class);
-		assertThat((Collection) contactPoints).contains(new InetSocketAddress(address, Integer.parseInt(port)));
-
 		try (Session session = cluster.connect()) {
 			session.execute("SELECT now() FROM system.local;");
 		}
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
+	void cqlSessionUseEmbeddedPortAndAddress() {
+		load(CqlSessionConfiguration.class);
+		assertThat(this.context.getBeansOfType(CqlSession.class)).hasSize(1);
+		CqlSession session = this.context.getBean(CqlSession.class);
+		session.execute("SELECT now() FROM system.local;");
+	}
+
+	@Test
 	void clusterFactoryBeanEmbeddedPortAndAddress() {
 		load(ClusterFactoryConfiguration.class);
-
-		ConfigurableEnvironment environment = this.context.getEnvironment();
-		String port = environment.getProperty("local.cassandra.port");
-		String address = environment.getProperty("local.cassandra.address");
-		assertThat(port).isNotNull();
-		assertThat(address).isNotNull();
-
 		assertThat(this.context.getBeansOfType(Cluster.class)).hasSize(1);
 		Cluster cluster = this.context.getBean(Cluster.class);
-
-		Object manager = ReflectionTestUtils.getField(cluster, "manager");
-		Object contactPoints = ReflectionTestUtils.getField(manager, "contactPoints");
-		assertThat(contactPoints).isInstanceOf(Collection.class);
-		assertThat((Collection) contactPoints).contains(new InetSocketAddress(address, Integer.parseInt(port)));
-
 		try (Session session = cluster.connect()) {
 			session.execute("SELECT now() FROM system.local;");
 		}
@@ -199,16 +180,8 @@ class EmbeddedCassandraAutoConfigurationTests {
 	@Test
 	void customCassandraBean() {
 		load(CustomCassandraConfiguration.class);
-
-		ConfigurableEnvironment environment = this.context.getEnvironment();
-		String port = environment.getProperty("local.cassandra.port");
-		String address = environment.getProperty("local.cassandra.address");
-		assertThat(port).isNull();
-		assertThat(address).isNull();
-
 		assertThat(this.context.getBeansOfType(Cassandra.class)).hasSize(1);
 		assertThat(this.context.getBeansOfType(Cluster.class)).hasSize(1);
-
 		Cluster cluster = this.context.getBean(Cluster.class);
 		try (Session session = cluster.connect()) {
 			session.execute("SELECT now() FROM system.local;");
@@ -239,12 +212,28 @@ class EmbeddedCassandraAutoConfigurationTests {
 	}
 
 	@Configuration
+	static class CqlSessionConfiguration {
+
+		@Bean(destroyMethod = "close")
+		public CqlSession cluster(@Value("${local.cassandra.port}") int port,
+				@Value("${local.cassandra.address}") String address) {
+			return CqlSession.builder()
+					.withLocalDatacenter("datacenter1")
+					.addContactPoint(new InetSocketAddress(address, port))
+					.build();
+		}
+
+	}
+
+	@Configuration
 	static class ClusterFactoryConfiguration {
 
 		@Bean
 		public CassandraClusterFactoryBean cluster(@Value("${local.cassandra.port}") int port,
 				@Value("${local.cassandra.address}") String address) {
 			CassandraClusterFactoryBean factoryBean = new CassandraClusterFactoryBean();
+			factoryBean.setMetricsEnabled(false);
+			factoryBean.setJmxReportingEnabled(false);
 			factoryBean.setPort(port);
 			factoryBean.setContactPoints(address);
 			return factoryBean;
@@ -274,11 +263,14 @@ class EmbeddedCassandraAutoConfigurationTests {
 
 		@Override
 		public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
-			registry.removeBeanDefinition("embeddedCassandra");
 		}
 
 		@Override
 		public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
+			for (String name : BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory,
+					Cassandra.class, true, false)) {
+				((BeanDefinitionRegistry) beanFactory).removeBeanDefinition(name);
+			}
 		}
 
 	}
