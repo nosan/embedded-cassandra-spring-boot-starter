@@ -137,6 +137,7 @@ class EmbeddedCassandraAutoConfigurationTests {
 		try (ConfigurableApplicationContext parent = new AnnotationConfigApplicationContext()) {
 			parent.refresh();
 			this.context = new AnnotationConfigApplicationContext();
+			this.context.registerShutdownHook();
 			this.context.setParent(parent);
 			this.context.register(EmbeddedCassandraAutoConfiguration.class, ClusterConfiguration.class);
 			this.context.refresh();
