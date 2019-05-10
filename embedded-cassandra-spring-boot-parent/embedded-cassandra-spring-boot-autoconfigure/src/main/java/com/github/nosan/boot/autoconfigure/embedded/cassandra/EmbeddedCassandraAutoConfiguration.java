@@ -28,6 +28,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.datastax.driver.core.Cluster;
+import com.datastax.driver.core.Session;
 import com.datastax.oss.driver.api.core.CqlSession;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.slf4j.Logger;
@@ -57,6 +58,7 @@ import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.io.Resource;
 import org.springframework.data.cassandra.config.CassandraClusterFactoryBean;
+import org.springframework.data.cassandra.config.CassandraCqlSessionFactoryBean;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
@@ -184,6 +186,28 @@ public class EmbeddedCassandraAutoConfiguration {
 			ClassLoader cl = EmbeddedCassandraClusterDependencyConfiguration.class.getClassLoader();
 			if (ClassUtils.isPresent("org.springframework.data.cassandra.config.CassandraClusterFactoryBean", cl)) {
 				return CassandraClusterFactoryBean.class;
+			}
+			return null;
+		}
+
+	}
+
+	/**
+	 * Additional configuration to ensure that {@link Session} bean depends on {@link Cassandra} bean.
+	 */
+	@Configuration
+	@ConditionalOnClass(Session.class)
+	static class EmbeddedCassandraSessionDependencyConfiguration
+			extends AbstractCassandraDependsOnBeanFactoryPostProcessor {
+
+		EmbeddedCassandraSessionDependencyConfiguration() {
+			super(Session.class, getFactoryBeanClass());
+		}
+
+		private static Class<? extends FactoryBean<?>> getFactoryBeanClass() {
+			ClassLoader cl = EmbeddedCassandraSessionDependencyConfiguration.class.getClassLoader();
+			if (ClassUtils.isPresent("org.springframework.data.cassandra.config.CassandraCqlSessionFactoryBean", cl)) {
+				return CassandraCqlSessionFactoryBean.class;
 			}
 			return null;
 		}
