@@ -271,11 +271,6 @@ public class EmbeddedCassandraProperties {
 	public static class Artifact {
 
 		/**
-		 * The directory to save an archive.
-		 */
-		private Path directory;
-
-		/**
 		 * Factory class to determine URLs for downloading an archive.
 		 */
 		private Class<? extends UrlFactory> urlFactory = DefaultUrlFactory.class;
@@ -296,14 +291,6 @@ public class EmbeddedCassandraProperties {
 		 * resource referenced by URLConnection.
 		 */
 		private Duration connectTimeout = Duration.ofSeconds(30);
-
-		public Path getDirectory() {
-			return this.directory;
-		}
-
-		public void setDirectory(Path directory) {
-			this.directory = directory;
-		}
 
 		public Class<? extends UrlFactory> getUrlFactory() {
 			return this.urlFactory;

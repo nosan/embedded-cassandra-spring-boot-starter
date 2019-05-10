@@ -60,7 +60,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dmytro Nosan
  */
 @EnabledOnJre(JRE.JAVA_8)
-@SuppressWarnings("unchecked")
 class EmbeddedCassandraAutoConfigurationTests {
 
 	private AnnotationConfigApplicationContext context;
@@ -93,7 +92,6 @@ class EmbeddedCassandraAutoConfigurationTests {
 				"com.github.nosan.embedded.cassandra.rack-file=classpath:rack.properties",
 				"com.github.nosan.embedded.cassandra.jvm-options=-Dtest.property=property",
 				"com.github.nosan.embedded.cassandra.java-home=target/java",
-				"com.github.nosan.embedded.cassandra.artifact.directory=target/embedded-cassandra/artifact",
 				"com.github.nosan.embedded.cassandra.artifact.url-factory=" + ClassUtils
 						.getQualifiedName(MockUrlFactory.class),
 				"com.github.nosan.embedded.cassandra.artifact.proxy.host=localhost",
@@ -129,7 +127,6 @@ class EmbeddedCassandraAutoConfigurationTests {
 		assertThat(af.getConnectTimeout()).isEqualTo(Duration.ofSeconds(5));
 		assertThat(af.getReadTimeout()).isEqualTo(Duration.ofSeconds(4));
 		assertThat(af.getUrlFactory()).isInstanceOf(MockUrlFactory.class);
-		assertThat(af.getDirectory()).isEqualTo(Paths.get("target/embedded-cassandra/artifact"));
 	}
 
 	@Test

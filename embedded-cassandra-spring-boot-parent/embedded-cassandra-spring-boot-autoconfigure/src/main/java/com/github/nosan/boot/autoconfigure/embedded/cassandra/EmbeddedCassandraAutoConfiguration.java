@@ -127,7 +127,6 @@ public class EmbeddedCassandraAutoConfiguration {
 		EmbeddedCassandraProperties.Artifact artifact = properties.getArtifact();
 		factory.setConnectTimeout(artifact.getConnectTimeout());
 		factory.setReadTimeout(artifact.getReadTimeout());
-		factory.setDirectory(artifact.getDirectory());
 		Class<? extends UrlFactory> urlFactory = artifact.getUrlFactory();
 		if (urlFactory != null) {
 			factory.setUrlFactory(BeanUtils.instantiateClass(urlFactory));
