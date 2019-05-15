@@ -15,8 +15,8 @@ If you want to know on which port(s) and address the `Cassandra` is running, get
 
 Project is based on:
 
- - **Spring Boot** `2.1.5`
- - **Embedded Cassandra** `2.0.1`
+ - **Spring Boot** `2.X.X`
+ - **Embedded Cassandra** `2.X.X`
  
 #### Maven
 
