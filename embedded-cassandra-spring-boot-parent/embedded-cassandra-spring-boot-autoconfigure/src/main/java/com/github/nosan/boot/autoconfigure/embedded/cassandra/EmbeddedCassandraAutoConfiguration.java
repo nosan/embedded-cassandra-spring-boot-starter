@@ -21,9 +21,7 @@ import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.URL;
 import java.util.Arrays;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -50,12 +48,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.MapPropertySource;
-import org.springframework.core.env.MutablePropertySources;
-import org.springframework.core.env.PropertySource;
 import org.springframework.core.io.Resource;
 import org.springframework.data.cassandra.config.CassandraClusterFactoryBean;
 import org.springframework.data.cassandra.config.CassandraCqlSessionFactoryBean;
@@ -64,7 +58,6 @@ import org.springframework.util.StringUtils;
 
 import com.github.nosan.embedded.cassandra.Cassandra;
 import com.github.nosan.embedded.cassandra.CassandraFactory;
-import com.github.nosan.embedded.cassandra.Settings;
 import com.github.nosan.embedded.cassandra.local.LocalCassandraFactory;
 import com.github.nosan.embedded.cassandra.local.WorkingDirectoryCustomizer;
 import com.github.nosan.embedded.cassandra.local.artifact.ArtifactFactory;
@@ -89,7 +82,7 @@ public class EmbeddedCassandraAutoConfiguration {
 			ApplicationContext applicationContext) {
 		Cassandra cassandra = embeddedCassandraFactory.create();
 		cassandra.start();
-		setProperties(applicationContext, cassandra.getSettings());
+		PropertiesUtils.add(applicationContext, cassandra);
 		return cassandra;
 	}
 
@@ -143,31 +136,6 @@ public class EmbeddedCassandraAutoConfiguration {
 
 	private static URL getURL(Resource resource) throws IOException {
 		return (resource != null) ? resource.getURL() : null;
-	}
-
-	private static void setProperties(ApplicationContext context, Settings settings) {
-		if (context instanceof ConfigurableApplicationContext) {
-			MutablePropertySources sources = ((ConfigurableApplicationContext) context).getEnvironment()
-					.getPropertySources();
-			Map<String, Object> properties = getProperties(sources);
-			settings.port().ifPresent(port -> properties.put("local.cassandra.port", port));
-			settings.sslPort().ifPresent(port -> properties.put("local.cassandra.ssl-port", port));
-			settings.rpcPort().ifPresent(port -> properties.put("local.cassandra.rpc-port", port));
-			settings.address().ifPresent(host -> properties.put("local.cassandra.address", host.getHostAddress()));
-		}
-		if (context.getParent() != null) {
-			setProperties(context.getParent(), settings);
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	private static Map<String, Object> getProperties(MutablePropertySources sources) {
-		PropertySource<?> propertySource = sources.get("local.cassandra");
-		if (propertySource == null) {
-			propertySource = new MapPropertySource("local.cassandra", new LinkedHashMap<>());
-			sources.addFirst(propertySource);
-		}
-		return (Map<String, Object>) propertySource.getSource();
 	}
 
 	/**
@@ -228,7 +196,7 @@ public class EmbeddedCassandraAutoConfiguration {
 
 	}
 
-	private abstract static class AbstractCassandraDependsOnBeanFactoryPostProcessor
+	abstract static class AbstractCassandraDependsOnBeanFactoryPostProcessor
 			extends AbstractDependsOnBeanFactoryPostProcessor {
 
 		AbstractCassandraDependsOnBeanFactoryPostProcessor(Class<?> beanClass,
@@ -238,7 +206,7 @@ public class EmbeddedCassandraAutoConfiguration {
 
 	}
 
-	private abstract static class AbstractDependsOnBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
+	abstract static class AbstractDependsOnBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
 
 		private final Class<?> beanClass;
 

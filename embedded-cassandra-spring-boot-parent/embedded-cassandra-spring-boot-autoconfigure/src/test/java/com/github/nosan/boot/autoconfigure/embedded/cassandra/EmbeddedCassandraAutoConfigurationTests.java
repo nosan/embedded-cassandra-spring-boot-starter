@@ -16,13 +16,23 @@
 
 package com.github.nosan.boot.autoconfigure.embedded.cassandra;
 
+import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.KeyStore;
+import java.security.SecureRandom;
 import java.time.Duration;
 
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManagerFactory;
+
 import com.datastax.driver.core.Cluster;
+import com.datastax.driver.core.RemoteEndpointAwareJdkSSLOptions;
 import com.datastax.driver.core.Session;
 import com.datastax.oss.driver.api.core.CqlSession;
 import org.junit.jupiter.api.AfterEach;
@@ -49,6 +59,7 @@ import com.github.nosan.embedded.cassandra.Cassandra;
 import com.github.nosan.embedded.cassandra.Settings;
 import com.github.nosan.embedded.cassandra.Version;
 import com.github.nosan.embedded.cassandra.local.LocalCassandraFactory;
+import com.github.nosan.embedded.cassandra.local.WorkingDirectoryCustomizer;
 import com.github.nosan.embedded.cassandra.local.artifact.RemoteArtifactFactory;
 import com.github.nosan.embedded.cassandra.local.artifact.UrlFactory;
 
@@ -186,6 +197,23 @@ class EmbeddedCassandraAutoConfigurationTests {
 		}
 	}
 
+	@Test
+	void cassandraSslBean() {
+		load(CassandraSslConfiguration.class,
+				"com.github.nosan.embedded.cassandra.configuration-file=classpath:cassandra-ssl.yaml");
+		assertThat(this.context.getBeansOfType(Cassandra.class)).hasSize(1);
+		assertThat(this.context.getBeansOfType(Cluster.class)).hasSize(1);
+		ConfigurableEnvironment environment = this.context.getEnvironment();
+		String port = environment.getProperty("local.cassandra.port");
+		String sslPort = environment.getProperty("local.cassandra.ssl-port");
+		assertThat(port).isNotNull().isEqualTo(sslPort);
+		Cluster cluster = this.context.getBean(Cluster.class);
+		try (Session session = cluster.connect()) {
+			session.execute("SELECT now() FROM system.local;");
+		}
+
+	}
+
 	private void load(Class<?> config, String... props) {
 		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
 		if (config != null) {
@@ -196,6 +224,64 @@ class EmbeddedCassandraAutoConfigurationTests {
 		ctx.register(EmbeddedCassandraAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class);
 		ctx.refresh();
 		this.context = ctx;
+	}
+
+	@Configuration
+	static class CassandraSslConfiguration {
+
+		private final Path truststoreFile;
+
+		private final Path keystoreFile;
+
+		CassandraSslConfiguration(@Value("classpath:cert/truststore.node0") Path truststoreFile,
+				@Value("classpath:cert/keystore.node0") Path keystoreFile) {
+			this.truststoreFile = truststoreFile;
+			this.keystoreFile = keystoreFile;
+		}
+
+		@Bean
+		public WorkingDirectoryCustomizer sslWorkingDirectoryCustomizer() {
+			return (workingDirectory, version) -> {
+				Path configuration = workingDirectory.resolve("conf");
+				Files.copy(this.keystoreFile, configuration.resolve("keystore.node0"));
+				Files.copy(this.truststoreFile, configuration.resolve("truststore.node0"));
+			};
+		}
+
+		@Bean(destroyMethod = "close")
+		public Cluster cluster(@Value("${local.cassandra.port}") int port,
+				@Value("${local.cassandra.address}") String address) throws Exception {
+			SSLContext sslContext = SSLContext.getInstance("SSL");
+			TrustManagerFactory tmf = getTrustManagerFactory(this.truststoreFile);
+			KeyManagerFactory kmf = getKeyManagerFactory(this.keystoreFile);
+			sslContext.init(kmf.getKeyManagers(), tmf.getTrustManagers(), new SecureRandom());
+			return Cluster.builder().addContactPoint(address).withoutMetrics().withoutJMXReporting().withPort(port)
+					.withSSL(RemoteEndpointAwareJdkSSLOptions.builder()
+							.withSSLContext(sslContext).build()).build();
+		}
+
+		private static KeyManagerFactory getKeyManagerFactory(Path keystoreFile) throws Exception {
+			char[] password = "cassandra".toCharArray();
+			try (InputStream stream = Files.newInputStream(keystoreFile)) {
+				KeyStore ks = KeyStore.getInstance("JKS");
+				ks.load(stream, password);
+				KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+				kmf.init(ks, password);
+				return kmf;
+			}
+		}
+
+		private static TrustManagerFactory getTrustManagerFactory(Path truststoreFile) throws Exception {
+			char[] password = "cassandra".toCharArray();
+			try (InputStream stream = Files.newInputStream(truststoreFile)) {
+				KeyStore ts = KeyStore.getInstance("JKS");
+				ts.load(stream, password);
+				TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+				tmf.init(ts);
+				return tmf;
+			}
+		}
+
 	}
 
 	@Configuration
