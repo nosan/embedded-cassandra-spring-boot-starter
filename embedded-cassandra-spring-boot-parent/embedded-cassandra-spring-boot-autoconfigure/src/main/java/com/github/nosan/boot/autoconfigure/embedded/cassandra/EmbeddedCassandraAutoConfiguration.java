@@ -17,11 +17,15 @@
 package com.github.nosan.boot.autoconfigure.embedded.cassandra;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -48,8 +52,12 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.MapPropertySource;
+import org.springframework.core.env.MutablePropertySources;
+import org.springframework.core.env.PropertySource;
 import org.springframework.core.io.Resource;
 import org.springframework.data.cassandra.config.CassandraClusterFactoryBean;
 import org.springframework.data.cassandra.config.CassandraCqlSessionFactoryBean;
@@ -58,6 +66,7 @@ import org.springframework.util.StringUtils;
 
 import com.github.nosan.embedded.cassandra.Cassandra;
 import com.github.nosan.embedded.cassandra.CassandraFactory;
+import com.github.nosan.embedded.cassandra.Settings;
 import com.github.nosan.embedded.cassandra.local.LocalCassandraFactory;
 import com.github.nosan.embedded.cassandra.local.WorkingDirectoryCustomizer;
 import com.github.nosan.embedded.cassandra.local.artifact.ArtifactFactory;
@@ -82,12 +91,12 @@ public class EmbeddedCassandraAutoConfiguration {
 			ApplicationContext applicationContext) {
 		Cassandra cassandra = embeddedCassandraFactory.create();
 		cassandra.start();
-		PropertiesUtils.add(applicationContext, cassandra);
+		addProperties(applicationContext, cassandra);
 		return cassandra;
 	}
 
 	@Bean
-	@ConditionalOnMissingBean
+	@ConditionalOnMissingBean(CassandraFactory.class)
 	public CassandraFactory embeddedCassandraFactory(EmbeddedCassandraProperties properties,
 			ArtifactFactory embeddedCassandraArtifactFactory,
 			ObjectProvider<WorkingDirectoryCustomizer> workingDirectoryCustomizers) throws IOException {
@@ -116,7 +125,7 @@ public class EmbeddedCassandraAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean
+	@ConditionalOnMissingBean(ArtifactFactory.class)
 	public ArtifactFactory embeddedCassandraArtifactFactory(EmbeddedCassandraProperties properties) {
 		RemoteArtifactFactory factory = new RemoteArtifactFactory();
 		EmbeddedCassandraProperties.Artifact artifact = properties.getArtifact();
@@ -136,6 +145,51 @@ public class EmbeddedCassandraAutoConfiguration {
 
 	private static URL getURL(Resource resource) throws IOException {
 		return (resource != null) ? resource.getURL() : null;
+	}
+
+	private static void addProperties(ApplicationContext applicationContext, Cassandra cassandra) {
+		Settings settings = cassandra.getSettings();
+		Optional<Integer> port = settings.port();
+		Optional<Integer> sslPort = settings.sslPort();
+		Optional<Integer> rpcPort = settings.rpcPort();
+		Optional<InetAddress> address = settings.address();
+		addProperties(applicationContext, port.orElseGet(() -> sslPort.orElse(null)),
+				sslPort.orElse(null), rpcPort.orElse(null), address.orElse(null));
+	}
+
+	private static void addProperties(ApplicationContext applicationContext, Integer port, Integer sslPort,
+			Integer rpcPort, InetAddress address) {
+		if (applicationContext instanceof ConfigurableApplicationContext) {
+			MutablePropertySources sources = ((ConfigurableApplicationContext) applicationContext).getEnvironment()
+					.getPropertySources();
+			Map<String, Object> properties = getProperties(sources);
+			if (port != null) {
+				properties.put("local.cassandra.port", port);
+			}
+			if (sslPort != null) {
+				properties.put("local.cassandra.ssl-port", sslPort);
+			}
+			if (rpcPort != null) {
+				properties.put("local.cassandra.rpc-port", rpcPort);
+			}
+			if (address != null) {
+				properties.put("local.cassandra.address", address.getHostAddress());
+			}
+		}
+		ApplicationContext parentApplicationContext = applicationContext.getParent();
+		if (parentApplicationContext != null) {
+			addProperties(parentApplicationContext, port, sslPort, rpcPort, address);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private static Map<String, Object> getProperties(MutablePropertySources sources) {
+		PropertySource<?> propertySource = sources.get("local.cassandra");
+		if (propertySource == null) {
+			propertySource = new MapPropertySource("local.cassandra", new LinkedHashMap<>());
+			sources.addFirst(propertySource);
+		}
+		return (Map<String, Object>) propertySource.getSource();
 	}
 
 	/**
