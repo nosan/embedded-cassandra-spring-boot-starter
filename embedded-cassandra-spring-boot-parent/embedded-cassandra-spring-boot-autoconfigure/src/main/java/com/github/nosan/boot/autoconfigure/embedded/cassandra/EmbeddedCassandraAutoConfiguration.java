@@ -25,7 +25,6 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -149,12 +148,11 @@ public class EmbeddedCassandraAutoConfiguration {
 
 	private static void addProperties(ApplicationContext applicationContext, Cassandra cassandra) {
 		Settings settings = cassandra.getSettings();
-		Optional<Integer> port = settings.port();
-		Optional<Integer> sslPort = settings.sslPort();
-		Optional<Integer> rpcPort = settings.rpcPort();
-		Optional<InetAddress> address = settings.address();
-		addProperties(applicationContext, port.orElseGet(() -> sslPort.orElse(null)),
-				sslPort.orElse(null), rpcPort.orElse(null), address.orElse(null));
+		Integer sslPort = settings.sslPort().orElse(null);
+		Integer port = settings.port().orElse(sslPort);
+		Integer rpcPort = settings.rpcPort().orElse(null);
+		InetAddress address = settings.address().orElse(null);
+		addProperties(applicationContext, port, sslPort, rpcPort, address);
 	}
 
 	private static void addProperties(ApplicationContext applicationContext, Integer port, Integer sslPort,
