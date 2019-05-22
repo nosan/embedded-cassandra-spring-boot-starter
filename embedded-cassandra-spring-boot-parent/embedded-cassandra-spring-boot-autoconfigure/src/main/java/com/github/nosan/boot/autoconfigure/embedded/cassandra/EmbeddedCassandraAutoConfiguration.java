@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -85,17 +86,18 @@ import com.github.nosan.embedded.cassandra.local.artifact.UrlFactory;
 public class EmbeddedCassandraAutoConfiguration {
 
 	@Bean(destroyMethod = "stop")
-	@ConditionalOnMissingBean(Cassandra.class)
+	@ConditionalOnMissingBean
 	public Cassandra embeddedCassandra(CassandraFactory embeddedCassandraFactory,
 			ApplicationContext applicationContext) {
 		Cassandra cassandra = embeddedCassandraFactory.create();
+		Objects.requireNonNull(cassandra, "Cassandra must not be null");
 		cassandra.start();
 		addProperties(applicationContext, cassandra);
 		return cassandra;
 	}
 
 	@Bean
-	@ConditionalOnMissingBean(CassandraFactory.class)
+	@ConditionalOnMissingBean
 	public CassandraFactory embeddedCassandraFactory(EmbeddedCassandraProperties properties,
 			ArtifactFactory embeddedCassandraArtifactFactory,
 			ObjectProvider<WorkingDirectoryCustomizer> workingDirectoryCustomizers) throws IOException {
@@ -124,7 +126,7 @@ public class EmbeddedCassandraAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean(ArtifactFactory.class)
+	@ConditionalOnMissingBean
 	public ArtifactFactory embeddedCassandraArtifactFactory(EmbeddedCassandraProperties properties) {
 		RemoteArtifactFactory factory = new RemoteArtifactFactory();
 		EmbeddedCassandraProperties.Artifact artifact = properties.getArtifact();
