@@ -129,6 +129,16 @@ public class EmbeddedCassandraProperties {
 	 */
 	private boolean deleteWorkingDirectory = true;
 
+	/**
+	 * Marks Cassandra threads as daemons.
+	 */
+	private boolean daemon = true;
+
+	/**
+	 * Startup timeout.
+	 */
+	private Duration startupTimeout = Duration.ofMinutes(1);
+
 	public Integer getPort() {
 		return this.port;
 	}
@@ -263,6 +273,22 @@ public class EmbeddedCassandraProperties {
 
 	public void setDeleteWorkingDirectory(boolean deleteWorkingDirectory) {
 		this.deleteWorkingDirectory = deleteWorkingDirectory;
+	}
+
+	public boolean isDaemon() {
+		return daemon;
+	}
+
+	public void setDaemon(boolean daemon) {
+		this.daemon = daemon;
+	}
+
+	public Duration getStartupTimeout() {
+		return startupTimeout;
+	}
+
+	public void setStartupTimeout(Duration startupTimeout) {
+		this.startupTimeout = startupTimeout;
 	}
 
 	/**

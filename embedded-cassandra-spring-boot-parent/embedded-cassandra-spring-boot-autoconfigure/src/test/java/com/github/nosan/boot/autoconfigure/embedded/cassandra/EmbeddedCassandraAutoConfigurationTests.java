@@ -83,11 +83,13 @@ class EmbeddedCassandraAutoConfigurationTests {
 	}
 
 	@Test
-	void configurePropeprties() {
+	void configureProperties() {
 		load(ExcludeCassandraPostProcessor.class,
 				"com.github.nosan.embedded.cassandra.working-directory=target/embedded-cassandra",
 				"com.github.nosan.embedded.cassandra.artifact-directory=target/embedded-cassandra-artifact",
 				"com.github.nosan.embedded.cassandra.version=3.11.3",
+				"com.github.nosan.embedded.cassandra.startup-timeout=30S",
+				"com.github.nosan.embedded.cassandra.daemon=false",
 				"com.github.nosan.embedded.cassandra.allow-root=true",
 				"com.github.nosan.embedded.cassandra.jmx-local-port=7199",
 				"com.github.nosan.embedded.cassandra.port=9042",
@@ -96,7 +98,6 @@ class EmbeddedCassandraAutoConfigurationTests {
 				"com.github.nosan.embedded.cassandra.rpc-port=9160",
 				"com.github.nosan.embedded.cassandra.register-shutdown-hook=true",
 				"com.github.nosan.embedded.cassandra.delete-working-directory=true",
-				"com.github.nosan.embedded.cassandra.startup-timeout=0s",
 				"com.github.nosan.embedded.cassandra.configuration-file=classpath:cassandra.yaml",
 				"com.github.nosan.embedded.cassandra.logging-file=classpath:logging.xml",
 				"com.github.nosan.embedded.cassandra.topology-file=classpath:topology.properties",
@@ -116,6 +117,8 @@ class EmbeddedCassandraAutoConfigurationTests {
 
 		assertThat(factory.getVersion()).isEqualTo(Version.parse("3.11.3"));
 		assertThat(factory.isRegisterShutdownHook()).isTrue();
+		assertThat(factory.isDaemon()).isFalse();
+		assertThat(factory.getStartupTimeout()).isEqualTo(Duration.ofSeconds(30));
 		assertThat(factory.isDeleteWorkingDirectory()).isTrue();
 		assertThat(factory.isAllowRoot()).isTrue();
 		assertThat(factory.getJmxLocalPort()).isEqualTo(7199);

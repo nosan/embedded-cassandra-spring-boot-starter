@@ -121,6 +121,8 @@ public class EmbeddedCassandraAutoConfiguration {
 		factory.setDeleteWorkingDirectory(properties.isDeleteWorkingDirectory());
 		factory.setWorkingDirectoryCustomizers(workingDirectoryCustomizers.orderedStream()
 				.collect(Collectors.toList()));
+		factory.setStartupTimeout(properties.getStartupTimeout());
+		factory.setDaemon(properties.isDaemon());
 		factory.setArtifactFactory(embeddedCassandraArtifactFactory);
 		return factory;
 	}
