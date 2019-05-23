@@ -276,7 +276,7 @@ public class EmbeddedCassandraProperties {
 	}
 
 	public boolean isDaemon() {
-		return daemon;
+		return this.daemon;
 	}
 
 	public void setDaemon(boolean daemon) {
@@ -284,7 +284,7 @@ public class EmbeddedCassandraProperties {
 	}
 
 	public Duration getStartupTimeout() {
-		return startupTimeout;
+		return this.startupTimeout;
 	}
 
 	public void setStartupTimeout(Duration startupTimeout) {
