@@ -15,8 +15,8 @@ If you want to know on which port(s) and address the `Cassandra` is running, get
 
 Project is based on:
 
- - **Spring Boot** `2.X.X`
- - **Embedded Cassandra** `2.X.X`
+ - **Spring Boot** `2.1.5`
+ - **Embedded Cassandra** `2.0.2`
  
 #### Maven
 
@@ -25,7 +25,7 @@ Project is based on:
     <dependency>
         <groupId>com.github.nosan</groupId>
         <artifactId>embedded-cassandra-spring-boot-starter</artifactId>
-        <version>1.0.1</version>
+        <version>1.0.2</version>
     </dependency>
 </dependencies>
 
@@ -63,6 +63,7 @@ This project uses [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2
     com.github.nosan.embedded.cassandra.artifact.read-timeout=30s#Read timeout
     com.github.nosan.embedded.cassandra.artifact.url-factory=com.github.nosan.embedded.cassandra.local.artifact.DefaultUrlFactory#Factory class to determine URLs for downloading an archive.
     com.github.nosan.embedded.cassandra.configuration-file=#Cassandra configuration file.
+    com.github.nosan.embedded.cassandra.daemon=true#Marks Cassandra threads as daemons.
     com.github.nosan.embedded.cassandra.delete-working-directory=#Delete the working directory after the successful stop.
     com.github.nosan.embedded.cassandra.java-home=#Java home directory.
     com.github.nosan.embedded.cassandra.jmx-local-port=#JMX port to listen on.
@@ -73,6 +74,7 @@ This project uses [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2
     com.github.nosan.embedded.cassandra.register-shutdown-hook=false#Register a shutdown hook with the JVM runtime.
     com.github.nosan.embedded.cassandra.rpc-port=#Thrift port for client connections.
     com.github.nosan.embedded.cassandra.ssl-storage-port=#The ssl port for inter-node communication.
+    com.github.nosan.embedded.cassandra.startup-timeout=1m#Startup timeout.
     com.github.nosan.embedded.cassandra.storage-port=#The port for inter-node communication.
     com.github.nosan.embedded.cassandra.topology-file=#Configuration file for data centers and rack names and to determine network topology so that requests are routed efficiently and allows the database to distribute replicas evenly.
     com.github.nosan.embedded.cassandra.version=3.11.4#Cassandra Version.

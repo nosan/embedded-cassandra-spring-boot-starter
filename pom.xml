@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.nosan</groupId>
     <artifactId>embedded-cassandra-spring-boot-project</artifactId>
-    <version>1.0.2-SNAPSHOT</version>
+    <version>1.0.2</version>
     <packaging>pom</packaging>
 
     <name>Embedded Cassandra Spring Boot Project</name>
@@ -39,7 +39,7 @@
         <junit.jupiter.version>5.4.1</junit.jupiter.version>
         <checkstyle.version>8.20</checkstyle.version>
         <spring-boot.version>2.1.5.RELEASE</spring-boot.version>
-        <embedded-cassandra.version>2.0.2-SNAPSHOT</embedded-cassandra.version>
+        <embedded-cassandra.version>2.0.2</embedded-cassandra.version>
         <java-driver-core.version>4.0.1</java-driver-core.version>
     </properties>
 
