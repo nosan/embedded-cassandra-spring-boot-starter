@@ -36,10 +36,10 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
         <assertj.version>3.12.2</assertj.version>
-        <junit.jupiter.version>5.4.1</junit.jupiter.version>
-        <checkstyle.version>8.20</checkstyle.version>
-        <spring-boot.version>2.1.5.RELEASE</spring-boot.version>
-        <embedded-cassandra.version>2.0.2</embedded-cassandra.version>
+        <junit.jupiter.version>5.4.2</junit.jupiter.version>
+        <checkstyle.version>8.21</checkstyle.version>
+        <spring-boot.version>2.1.6.RELEASE</spring-boot.version>
+        <embedded-cassandra.version>2.0.3-SNAPSHOT</embedded-cassandra.version>
         <java-driver-core.version>4.0.1</java-driver-core.version>
     </properties>
 
