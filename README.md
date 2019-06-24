@@ -15,8 +15,12 @@ If you want to know on which port(s) and address the `Cassandra` is running, get
 
 Project is based on:
 
- - **Spring Boot** `2.1.5`
- - **Embedded Cassandra** `2.0.2`
+| embedded-cassandra-spring-boot-starter   |      embedded-cassandra      |  spring-boot-starter |
+|----------|:-------------:|------:|
+| 1.0.3 |  2.0.3 | 2.1.6.RELEASE |
+| 1.0.2 |    2.0.2   |   2.1.5.RELEASE |
+| 1.0.1 | 2.0.1 |    2.1.5.RELEASE |
+| 1.0.0 | 2.0.0 |    2.1.4.RELEASE |
  
 #### Maven
 
@@ -25,7 +29,7 @@ Project is based on:
     <dependency>
         <groupId>com.github.nosan</groupId>
         <artifactId>embedded-cassandra-spring-boot-starter</artifactId>
-        <version>1.0.2</version>
+        <version>1.0.3</version>
     </dependency>
 </dependencies>
 
