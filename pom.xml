@@ -40,7 +40,7 @@
         <checkstyle.version>8.22</checkstyle.version>
         <spring-boot.version>2.1.6.RELEASE</spring-boot.version>
         <embedded-cassandra.version>2.0.3</embedded-cassandra.version>
-        <java-driver-core.version>4.0.1</java-driver-core.version>
+        <java-driver-core.version>4.1.0</java-driver-core.version>
     </properties>
 
     <dependencyManagement>
