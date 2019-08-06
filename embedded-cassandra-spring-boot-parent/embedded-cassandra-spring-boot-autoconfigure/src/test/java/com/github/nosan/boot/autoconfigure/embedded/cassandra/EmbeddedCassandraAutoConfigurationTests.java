@@ -47,11 +47,9 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.data.cassandra.config.CassandraClusterFactoryBean;
 import org.springframework.util.ClassUtils;
 
@@ -146,24 +144,6 @@ class EmbeddedCassandraAutoConfigurationTests {
 	}
 
 	@Test
-	void propertiesAreAvailableInTheParentContext() {
-		try (ConfigurableApplicationContext parent = new AnnotationConfigApplicationContext()) {
-			parent.refresh();
-			this.context = new AnnotationConfigApplicationContext();
-			this.context.registerShutdownHook();
-			this.context.setParent(parent);
-			this.context.register(EmbeddedCassandraAutoConfiguration.class, ClusterConfiguration.class);
-			this.context.refresh();
-
-			ConfigurableEnvironment environment = this.context.getEnvironment();
-			String port = environment.getProperty("local.cassandra.port");
-			String address = environment.getProperty("local.cassandra.address");
-			assertThat(port).isNotNull();
-			assertThat(address).isNotNull();
-		}
-	}
-
-	@Test
 	void clusterUseEmbeddedPortAndAddress() {
 		load(ClusterConfiguration.class);
 		assertThat(this.context.getBeansOfType(Cluster.class)).hasSize(1);
@@ -208,10 +188,6 @@ class EmbeddedCassandraAutoConfigurationTests {
 				"com.github.nosan.embedded.cassandra.configuration-file=classpath:cassandra-ssl.yaml");
 		assertThat(this.context.getBeansOfType(Cassandra.class)).hasSize(1);
 		assertThat(this.context.getBeansOfType(Cluster.class)).hasSize(1);
-		ConfigurableEnvironment environment = this.context.getEnvironment();
-		String port = environment.getProperty("local.cassandra.port");
-		String sslPort = environment.getProperty("local.cassandra.ssl-port");
-		assertThat(port).isNotNull().isEqualTo(sslPort);
 		Cluster cluster = this.context.getBean(Cluster.class);
 		try (Session session = cluster.connect()) {
 			session.execute("SELECT now() FROM system.local;");
@@ -254,13 +230,14 @@ class EmbeddedCassandraAutoConfigurationTests {
 		}
 
 		@Bean(destroyMethod = "close")
-		public Cluster cluster(@Value("${local.cassandra.port}") int port,
-				@Value("${local.cassandra.address}") String address) throws Exception {
+		public Cluster cluster(Cassandra cassandra) throws Exception {
+			Settings settings = cassandra.getSettings();
 			SSLContext sslContext = SSLContext.getInstance("SSL");
 			TrustManagerFactory tmf = getTrustManagerFactory(this.truststoreFile);
 			KeyManagerFactory kmf = getKeyManagerFactory(this.keystoreFile);
 			sslContext.init(kmf.getKeyManagers(), tmf.getTrustManagers(), new SecureRandom());
-			return Cluster.builder().addContactPoint(address).withoutMetrics().withoutJMXReporting().withPort(port)
+			return Cluster.builder().addContactPoint(settings.getAddress().getHostAddress()).withoutMetrics()
+					.withoutJMXReporting().withPort(settings.getPortOrSslPort())
 					.withSSL(RemoteEndpointAwareJdkSSLOptions.builder()
 							.withSSLContext(sslContext).build()).build();
 		}
@@ -293,9 +270,10 @@ class EmbeddedCassandraAutoConfigurationTests {
 	static class ClusterConfiguration {
 
 		@Bean(destroyMethod = "close")
-		public Cluster cluster(@Value("${local.cassandra.port}") int port,
-				@Value("${local.cassandra.address}") String address) {
-			return Cluster.builder().addContactPoint(address).withoutMetrics().withoutJMXReporting().withPort(port)
+		public Cluster cluster(Cassandra cassandra) {
+			Settings settings = cassandra.getSettings();
+			return Cluster.builder().addContactPoint(settings.getAddress().getHostAddress()).withoutMetrics()
+					.withoutJMXReporting().withPort(settings.getPortOrSslPort())
 					.build();
 		}
 
@@ -305,11 +283,11 @@ class EmbeddedCassandraAutoConfigurationTests {
 	static class CqlSessionConfiguration {
 
 		@Bean(destroyMethod = "close")
-		public CqlSession cluster(@Value("${local.cassandra.port}") int port,
-				@Value("${local.cassandra.address}") String address) {
+		public CqlSession cluster(Cassandra cassandra) {
+			Settings settings = cassandra.getSettings();
 			return CqlSession.builder()
 					.withLocalDatacenter("datacenter1")
-					.addContactPoint(new InetSocketAddress(address, port))
+					.addContactPoint(new InetSocketAddress(settings.getAddress(), settings.getPortOrSslPort()))
 					.build();
 		}
 
@@ -319,13 +297,13 @@ class EmbeddedCassandraAutoConfigurationTests {
 	static class ClusterFactoryConfiguration {
 
 		@Bean
-		public CassandraClusterFactoryBean cluster(@Value("${local.cassandra.port}") int port,
-				@Value("${local.cassandra.address}") String address) {
+		public CassandraClusterFactoryBean cluster(Cassandra cassandra) {
+			Settings settings = cassandra.getSettings();
 			CassandraClusterFactoryBean factoryBean = new CassandraClusterFactoryBean();
 			factoryBean.setMetricsEnabled(false);
 			factoryBean.setJmxReportingEnabled(false);
-			factoryBean.setPort(port);
-			factoryBean.setContactPoints(address);
+			factoryBean.setPort(settings.getPortOrSslPort());
+			factoryBean.setContactPoints(settings.getAddress().getHostAddress());
 			return factoryBean;
 		}
 
@@ -344,7 +322,7 @@ class EmbeddedCassandraAutoConfigurationTests {
 			Settings settings = cassandra.getSettings();
 			return Cluster.builder().addContactPoints(settings.getAddress()).withoutMetrics()
 					.withoutJMXReporting()
-					.withPort(settings.getPort()).build();
+					.withPort(settings.getPortOrSslPort()).build();
 		}
 
 	}

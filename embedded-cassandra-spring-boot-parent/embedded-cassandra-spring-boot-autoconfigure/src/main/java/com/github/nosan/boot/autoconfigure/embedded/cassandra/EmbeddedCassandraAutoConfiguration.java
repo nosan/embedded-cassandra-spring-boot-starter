@@ -17,13 +17,9 @@
 package com.github.nosan.boot.autoconfigure.embedded.cassandra;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.URL;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.datastax.driver.core.Cluster;
@@ -41,13 +37,8 @@ import org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfigurati
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.MapPropertySource;
-import org.springframework.core.env.MutablePropertySources;
-import org.springframework.core.env.PropertySource;
 import org.springframework.core.io.Resource;
 import org.springframework.data.cassandra.config.CassandraClusterFactoryBean;
 import org.springframework.data.cassandra.config.CassandraCqlSessionFactoryBean;
@@ -55,7 +46,6 @@ import org.springframework.util.ClassUtils;
 
 import com.github.nosan.embedded.cassandra.Cassandra;
 import com.github.nosan.embedded.cassandra.CassandraFactory;
-import com.github.nosan.embedded.cassandra.Settings;
 import com.github.nosan.embedded.cassandra.local.LocalCassandraFactory;
 import com.github.nosan.embedded.cassandra.local.WorkingDirectoryCustomizer;
 import com.github.nosan.embedded.cassandra.local.artifact.ArtifactFactory;
@@ -74,15 +64,10 @@ import com.github.nosan.embedded.cassandra.local.artifact.UrlFactory;
 @ConditionalOnClass({Cassandra.class, ArchiveEntry.class, Logger.class})
 public class EmbeddedCassandraAutoConfiguration {
 
-	@Bean(destroyMethod = "stop")
+	@Bean(destroyMethod = "stop", initMethod = "start")
 	@ConditionalOnMissingBean
-	public Cassandra embeddedCassandra(CassandraFactory embeddedCassandraFactory,
-			ApplicationContext applicationContext) {
-		Cassandra cassandra = embeddedCassandraFactory.create();
-		Objects.requireNonNull(cassandra, "Cassandra must not be null");
-		cassandra.start();
-		addProperties(applicationContext, cassandra);
-		return cassandra;
+	public Cassandra embeddedCassandra(CassandraFactory embeddedCassandraFactory) {
+		return embeddedCassandraFactory.create();
 	}
 
 	@Bean
@@ -140,60 +125,15 @@ public class EmbeddedCassandraAutoConfiguration {
 		return (resource != null) ? resource.getURL() : null;
 	}
 
-	private static void addProperties(ApplicationContext applicationContext, Cassandra cassandra) {
-		Settings settings = cassandra.getSettings();
-		Integer sslPort = settings.sslPort().orElse(null);
-		Integer port = settings.port().orElse(sslPort);
-		Integer rpcPort = settings.rpcPort().orElse(null);
-		InetAddress address = settings.address().orElse(null);
-		addProperties(applicationContext, port, sslPort, rpcPort, address);
-	}
-
-	private static void addProperties(ApplicationContext applicationContext, Integer port, Integer sslPort,
-			Integer rpcPort, InetAddress address) {
-		if (applicationContext instanceof ConfigurableApplicationContext) {
-			MutablePropertySources sources = ((ConfigurableApplicationContext) applicationContext).getEnvironment()
-					.getPropertySources();
-			Map<String, Object> properties = getProperties(sources);
-			if (port != null) {
-				properties.put("local.cassandra.port", port);
-			}
-			if (sslPort != null) {
-				properties.put("local.cassandra.ssl-port", sslPort);
-			}
-			if (rpcPort != null) {
-				properties.put("local.cassandra.rpc-port", rpcPort);
-			}
-			if (address != null) {
-				properties.put("local.cassandra.address", address.getHostAddress());
-			}
-		}
-		ApplicationContext parentApplicationContext = applicationContext.getParent();
-		if (parentApplicationContext != null) {
-			addProperties(parentApplicationContext, port, sslPort, rpcPort, address);
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	private static Map<String, Object> getProperties(MutablePropertySources sources) {
-		PropertySource<?> propertySource = sources.get("local.cassandra");
-		if (propertySource == null) {
-			propertySource = new MapPropertySource("local.cassandra", new LinkedHashMap<>());
-			sources.addFirst(propertySource);
-		}
-		return (Map<String, Object>) propertySource.getSource();
-	}
-
 	/**
 	 * Additional configuration to ensure that {@link Cluster} bean depends on {@link Cassandra} bean.
 	 */
 	@Configuration
 	@ConditionalOnClass(Cluster.class)
-	static class EmbeddedCassandraClusterDependencyConfiguration
-			extends AbstractCassandraDependsOnBeanFactoryPostProcessor {
+	static class EmbeddedCassandraClusterDependencyConfiguration extends AbstractDependsOnBeanFactoryPostProcessor {
 
 		EmbeddedCassandraClusterDependencyConfiguration() {
-			super(Cluster.class, getFactoryBeanClass());
+			super(Cluster.class, getFactoryBeanClass(), Cassandra.class);
 		}
 
 		private static Class<? extends FactoryBean<?>> getFactoryBeanClass() {
@@ -211,11 +151,10 @@ public class EmbeddedCassandraAutoConfiguration {
 	 */
 	@Configuration
 	@ConditionalOnClass(Session.class)
-	static class EmbeddedCassandraSessionDependencyConfiguration
-			extends AbstractCassandraDependsOnBeanFactoryPostProcessor {
+	static class EmbeddedCassandraSessionDependencyConfiguration extends AbstractDependsOnBeanFactoryPostProcessor {
 
 		EmbeddedCassandraSessionDependencyConfiguration() {
-			super(Session.class, getFactoryBeanClass());
+			super(Session.class, getFactoryBeanClass(), Cassandra.class);
 		}
 
 		private static Class<? extends FactoryBean<?>> getFactoryBeanClass() {
@@ -233,21 +172,10 @@ public class EmbeddedCassandraAutoConfiguration {
 	 */
 	@Configuration
 	@ConditionalOnClass(CqlSession.class)
-	static class EmbeddedCassandraCqlSessionDependencyConfiguration
-			extends AbstractCassandraDependsOnBeanFactoryPostProcessor {
+	static class EmbeddedCassandraCqlSessionDependencyConfiguration extends AbstractDependsOnBeanFactoryPostProcessor {
 
 		EmbeddedCassandraCqlSessionDependencyConfiguration() {
-			super(CqlSession.class, null);
-		}
-
-	}
-
-	abstract static class AbstractCassandraDependsOnBeanFactoryPostProcessor
-			extends AbstractDependsOnBeanFactoryPostProcessor {
-
-		AbstractCassandraDependsOnBeanFactoryPostProcessor(Class<?> beanClass,
-				Class<? extends FactoryBean<?>> factoryBeanClass) {
-			super(beanClass, factoryBeanClass, Cassandra.class);
+			super(CqlSession.class, Cassandra.class);
 		}
 
 	}
