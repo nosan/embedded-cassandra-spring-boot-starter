@@ -21,12 +21,9 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.datastax.driver.core.Cluster;
@@ -35,16 +32,9 @@ import com.datastax.oss.driver.api.core.CqlSession;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.slf4j.Logger;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.FactoryBean;
-import org.springframework.beans.factory.ListableBeanFactory;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.boot.autoconfigure.AbstractDependsOnBeanFactoryPostProcessor;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfiguration;
@@ -62,7 +52,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.data.cassandra.config.CassandraClusterFactoryBean;
 import org.springframework.data.cassandra.config.CassandraCqlSessionFactoryBean;
 import org.springframework.util.ClassUtils;
-import org.springframework.util.StringUtils;
 
 import com.github.nosan.embedded.cassandra.Cassandra;
 import com.github.nosan.embedded.cassandra.CassandraFactory;
@@ -124,6 +113,7 @@ public class EmbeddedCassandraAutoConfiguration {
 		factory.setStartupTimeout(properties.getStartupTimeout());
 		factory.setDaemon(properties.isDaemon());
 		factory.setArtifactFactory(embeddedCassandraArtifactFactory);
+		factory.getEnvironmentVariables().putAll(properties.getEnvironmentVariables());
 		return factory;
 	}
 
@@ -258,65 +248,6 @@ public class EmbeddedCassandraAutoConfiguration {
 		AbstractCassandraDependsOnBeanFactoryPostProcessor(Class<?> beanClass,
 				Class<? extends FactoryBean<?>> factoryBeanClass) {
 			super(beanClass, factoryBeanClass, Cassandra.class);
-		}
-
-	}
-
-	abstract static class AbstractDependsOnBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
-
-		private final Class<?> beanClass;
-
-		private final Class<? extends FactoryBean<?>> factoryBeanClass;
-
-		private final Class<?>[] dependsOn;
-
-		AbstractDependsOnBeanFactoryPostProcessor(Class<?> beanClass,
-				Class<? extends FactoryBean<?>> factoryBeanClass, Class<?>... dependsOn) {
-			this.beanClass = beanClass;
-			this.factoryBeanClass = factoryBeanClass;
-			this.dependsOn = dependsOn;
-		}
-
-		@Override
-		public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
-			for (String beanName : getBeanNames(this.beanClass, this.factoryBeanClass, beanFactory)) {
-				BeanDefinition definition = getDefinition(beanName, beanFactory);
-				String[] dependencies = definition.getDependsOn();
-				for (Class<?> type : this.dependsOn) {
-					for (String bean : getBeanNames(type, beanFactory)) {
-						dependencies = StringUtils.addStringToArray(dependencies, bean);
-					}
-				}
-				definition.setDependsOn(dependencies);
-			}
-		}
-
-		private static Set<String> getBeanNames(Class<?> beanClass, Class<?> factoryBeanClass,
-				ListableBeanFactory beanFactory) {
-			Set<String> names = new LinkedHashSet<>(Arrays.asList(getBeanNames(beanClass, beanFactory)));
-			if (factoryBeanClass != null) {
-				for (String name : getBeanNames(factoryBeanClass, beanFactory)) {
-					names.add(BeanFactoryUtils.transformedBeanName(name));
-				}
-			}
-			return names;
-		}
-
-		private static String[] getBeanNames(Class<?> beanClass, ListableBeanFactory beanFactory) {
-			return BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, beanClass, true, false);
-		}
-
-		private static BeanDefinition getDefinition(String beanName, ConfigurableListableBeanFactory beanFactory) {
-			try {
-				return beanFactory.getBeanDefinition(beanName);
-			}
-			catch (NoSuchBeanDefinitionException ex) {
-				BeanFactory parentBeanFactory = beanFactory.getParentBeanFactory();
-				if (parentBeanFactory instanceof ConfigurableListableBeanFactory) {
-					return getDefinition(beanName, (ConfigurableListableBeanFactory) parentBeanFactory);
-				}
-				throw ex;
-			}
 		}
 
 	}

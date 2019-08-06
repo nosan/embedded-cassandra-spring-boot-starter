@@ -20,7 +20,9 @@ import java.net.Proxy.Type;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.core.io.Resource;
@@ -41,6 +43,11 @@ public class EmbeddedCassandraProperties {
 	 * JVM options that should be associated with Cassandra.
 	 */
 	private final List<String> jvmOptions = new ArrayList<>();
+
+	/**
+	 * Environment variables that should be associated with Cassandra.
+	 */
+	private final Map<String, String> environmentVariables = new LinkedHashMap<>();
 
 	/**
 	 * Artifact configuration.
@@ -125,7 +132,7 @@ public class EmbeddedCassandraProperties {
 	private Integer jmxLocalPort;
 
 	/**
-	 * Delete the working directory after success Cassandra stop.
+	 * Delete the working directory after the successful Cassandra stop.
 	 */
 	private boolean deleteWorkingDirectory = true;
 
@@ -139,68 +146,16 @@ public class EmbeddedCassandraProperties {
 	 */
 	private Duration startupTimeout = Duration.ofMinutes(1);
 
-	public Integer getPort() {
-		return this.port;
+	public List<String> getJvmOptions() {
+		return this.jvmOptions;
 	}
 
-	public void setPort(Integer port) {
-		this.port = port;
-	}
-
-	public Integer getRpcPort() {
-		return this.rpcPort;
-	}
-
-	public void setRpcPort(Integer rpcPort) {
-		this.rpcPort = rpcPort;
-	}
-
-	public Integer getStoragePort() {
-		return this.storagePort;
-	}
-
-	public void setStoragePort(Integer storagePort) {
-		this.storagePort = storagePort;
-	}
-
-	public Integer getSslStoragePort() {
-		return this.sslStoragePort;
-	}
-
-	public void setSslStoragePort(Integer sslStoragePort) {
-		this.sslStoragePort = sslStoragePort;
-	}
-
-	public Integer getJmxLocalPort() {
-		return this.jmxLocalPort;
-	}
-
-	public void setJmxLocalPort(Integer jmxLocalPort) {
-		this.jmxLocalPort = jmxLocalPort;
-	}
-
-	public boolean isRegisterShutdownHook() {
-		return this.registerShutdownHook;
-	}
-
-	public void setRegisterShutdownHook(boolean registerShutdownHook) {
-		this.registerShutdownHook = registerShutdownHook;
-	}
-
-	public boolean isAllowRoot() {
-		return this.allowRoot;
-	}
-
-	public void setAllowRoot(boolean allowRoot) {
-		this.allowRoot = allowRoot;
+	public Map<String, String> getEnvironmentVariables() {
+		return this.environmentVariables;
 	}
 
 	public Artifact getArtifact() {
 		return this.artifact;
-	}
-
-	public List<String> getJvmOptions() {
-		return this.jvmOptions;
 	}
 
 	public String getVersion() {
@@ -217,6 +172,14 @@ public class EmbeddedCassandraProperties {
 
 	public void setWorkingDirectory(Path workingDirectory) {
 		this.workingDirectory = workingDirectory;
+	}
+
+	public Path getArtifactDirectory() {
+		return this.artifactDirectory;
+	}
+
+	public void setArtifactDirectory(Path artifactDirectory) {
+		this.artifactDirectory = artifactDirectory;
 	}
 
 	public Resource getConfigurationFile() {
@@ -259,12 +222,60 @@ public class EmbeddedCassandraProperties {
 		this.javaHome = javaHome;
 	}
 
-	public Path getArtifactDirectory() {
-		return this.artifactDirectory;
+	public boolean isRegisterShutdownHook() {
+		return this.registerShutdownHook;
 	}
 
-	public void setArtifactDirectory(Path artifactDirectory) {
-		this.artifactDirectory = artifactDirectory;
+	public void setRegisterShutdownHook(boolean registerShutdownHook) {
+		this.registerShutdownHook = registerShutdownHook;
+	}
+
+	public boolean isAllowRoot() {
+		return this.allowRoot;
+	}
+
+	public void setAllowRoot(boolean allowRoot) {
+		this.allowRoot = allowRoot;
+	}
+
+	public Integer getPort() {
+		return this.port;
+	}
+
+	public void setPort(Integer port) {
+		this.port = port;
+	}
+
+	public Integer getRpcPort() {
+		return this.rpcPort;
+	}
+
+	public void setRpcPort(Integer rpcPort) {
+		this.rpcPort = rpcPort;
+	}
+
+	public Integer getStoragePort() {
+		return this.storagePort;
+	}
+
+	public void setStoragePort(Integer storagePort) {
+		this.storagePort = storagePort;
+	}
+
+	public Integer getSslStoragePort() {
+		return this.sslStoragePort;
+	}
+
+	public void setSslStoragePort(Integer sslStoragePort) {
+		this.sslStoragePort = sslStoragePort;
+	}
+
+	public Integer getJmxLocalPort() {
+		return this.jmxLocalPort;
+	}
+
+	public void setJmxLocalPort(Integer jmxLocalPort) {
+		this.jmxLocalPort = jmxLocalPort;
 	}
 
 	public boolean isDeleteWorkingDirectory() {

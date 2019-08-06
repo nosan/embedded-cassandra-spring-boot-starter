@@ -103,6 +103,7 @@ class EmbeddedCassandraAutoConfigurationTests {
 				"com.github.nosan.embedded.cassandra.topology-file=classpath:topology.properties",
 				"com.github.nosan.embedded.cassandra.rack-file=classpath:rack.properties",
 				"com.github.nosan.embedded.cassandra.jvm-options=-Dtest.property=property",
+				"com.github.nosan.embedded.cassandra.environment-variables.NAME=cassandra",
 				"com.github.nosan.embedded.cassandra.java-home=target/java",
 				"com.github.nosan.embedded.cassandra.artifact.url-factory=" + ClassUtils
 						.getQualifiedName(MockUrlFactory.class),
@@ -127,6 +128,7 @@ class EmbeddedCassandraAutoConfigurationTests {
 		assertThat(factory.getStoragePort()).isEqualTo(7000);
 		assertThat(factory.getSslStoragePort()).isEqualTo(7001);
 		assertThat(factory.getJvmOptions()).containsExactly("-Dtest.property=property");
+		assertThat(factory.getEnvironmentVariables()).containsEntry("NAME", "cassandra");
 		assertThat(factory.getWorkingDirectory()).isEqualTo(Paths.get("target/embedded-cassandra"));
 		assertThat(factory.getArtifactDirectory()).isEqualTo(Paths.get("target/embedded-cassandra-artifact"));
 		assertThat(factory.getJavaHome()).isEqualTo(Paths.get("target/java"));
