@@ -22,5 +22,5 @@
 @NonNullFields
 package com.github.nosan.boot.autoconfigure.embedded.cassandra;
 
-import com.github.nosan.embedded.cassandra.annotations.NonNullApi;
-import com.github.nosan.embedded.cassandra.annotations.NonNullFields;
+import org.springframework.lang.NonNullApi;
+import org.springframework.lang.NonNullFields;
