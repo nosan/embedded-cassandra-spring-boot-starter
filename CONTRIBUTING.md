@@ -1,12 +1,12 @@
-# Contributing to Embedded Cassandra [Spring Boot]
+# Contributing to Embedded Cassandra [Spring Boot Starter]
 
-`Embedded Cassandra [Spring Boot]` is released under the Apache 2.0 license.
+`Embedded Cassandra [Spring Boot Starter]` is released under the Apache 2.0 license.
 
 ## Contributions
 
-`Embedded Cassandra [Spring Boot]` welcomes contributions from everyone.
+`Embedded Cassandra [Spring Boot Starter]` welcomes contributions from everyone.
 
-Contributions to `Embedded Cassandra [Spring Boot]` should be made in the form of `GitHub pull requests`. Each pull request will
+Contributions to `Embedded Cassandra [Spring Boot Starter]` should be made in the form of `GitHub pull requests`. Each pull request will
 be reviewed by a contributor.
 
 ## Pull Request Checklist
