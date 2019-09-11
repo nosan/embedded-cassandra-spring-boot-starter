@@ -35,12 +35,12 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
-        <assertj.version>3.12.2</assertj.version>
-        <junit.jupiter.version>5.5.1</junit.jupiter.version>
+        <assertj.version>3.13.2</assertj.version>
+        <junit.jupiter.version>5.5.2</junit.jupiter.version>
         <checkstyle.version>8.22</checkstyle.version>
         <spring-boot.version>2.2.0.M6</spring-boot.version>
         <embedded-cassandra.version>3.0.0.RC2</embedded-cassandra.version>
-        <java-driver-core.version>4.1.0</java-driver-core.version>
+        <java-driver-core.version>4.2.0</java-driver-core.version>
     </properties>
 
     <dependencyManagement>
@@ -63,7 +63,7 @@
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-test</artifactId>
-                <version>${spring-boot.version}</version>
+                <version>2.2.0.M6</version>
             </dependency>
             <dependency>
                 <groupId>org.springframework.boot</groupId>
