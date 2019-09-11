@@ -36,7 +36,6 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
         <assertj.version>3.13.2</assertj.version>
-        <junit.jupiter.version>5.5.2</junit.jupiter.version>
         <checkstyle.version>8.22</checkstyle.version>
         <spring-boot.version>2.2.0.M6</spring-boot.version>
         <embedded-cassandra.version>3.0.0.RC2</embedded-cassandra.version>
@@ -84,11 +83,6 @@
                 <groupId>org.assertj</groupId>
                 <artifactId>assertj-core</artifactId>
                 <version>${assertj.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.junit.jupiter</groupId>
-                <artifactId>junit-jupiter</artifactId>
-                <version>${junit.jupiter.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
