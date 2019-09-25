@@ -17,7 +17,6 @@
 package com.github.nosan.boot.autoconfigure.embedded.cassandra;
 
 import java.time.Duration;
-import java.util.stream.Collectors;
 
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Session;
@@ -35,7 +34,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.data.cassandra.CassandraDataAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
-import org.springframework.boot.util.LambdaSafe;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -73,9 +71,8 @@ public class EmbeddedCassandraAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		@SuppressWarnings("unchecked")
 		CassandraFactory embeddedCassandraFactory(EmbeddedCassandraProperties properties,
-				ObjectProvider<CassandraFactoryCustomizer> customizers) {
+				ObjectProvider<CassandraFactoryCustomizer<? super EmbeddedCassandraFactory>> customizers) {
 
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 
@@ -96,8 +93,8 @@ public class EmbeddedCassandraAutoConfiguration {
 			map.from(properties::getJavaHome).to(cassandraFactory::setJavaHome);
 			map.from(properties::getWorkingDirectory).to(cassandraFactory::setWorkingDirectory);
 
-			map.from(properties::getTimeout).whenNot(Duration::isNegative).whenNot(Duration::isZero).to(
-					cassandraFactory::setTimeout);
+			map.from(properties::getTimeout).whenNot(Duration::isNegative).whenNot(Duration::isZero)
+					.to(cassandraFactory::setTimeout);
 
 			map.from(properties::getPort).to(cassandraFactory::setPort);
 			map.from(properties::getSslPort).to(cassandraFactory::setSslPort);
@@ -110,9 +107,7 @@ public class EmbeddedCassandraAutoConfiguration {
 			map.from(properties::getTopologyConfig).as(SpringResource::new).to(cassandraFactory::setTopologyConfig);
 			map.from(properties::getRackConfig).as(SpringResource::new).to(cassandraFactory::setRackConfig);
 
-			LambdaSafe.callbacks(CassandraFactoryCustomizer.class,
-					customizers.orderedStream().collect(Collectors.toList()), cassandraFactory)
-					.invoke((customizer) -> customizer.customize(cassandraFactory));
+			customizers.orderedStream().forEach(customizer -> customizer.customize(cassandraFactory));
 
 			return cassandraFactory;
 		}
