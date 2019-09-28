@@ -217,7 +217,8 @@
                     <configuration>
                         <serverId>sonatype</serverId>
                         <nexusUrl>${nexus.url}</nexusUrl>
-                        <stagingDescription>Embedded Cassandra Project ${project.version}</stagingDescription>
+                        <stagingDescription>Embedded Cassandra Spring Boot Project ${project.version}
+                        </stagingDescription>
                         <altStagingDirectory>${session.executionRootDirectory}/target/</altStagingDirectory>
                         <stagingProgressTimeoutMinutes>10</stagingProgressTimeoutMinutes>
                     </configuration>
