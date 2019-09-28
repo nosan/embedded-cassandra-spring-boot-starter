@@ -40,6 +40,7 @@
         <spring-boot.version>2.2.0.M6</spring-boot.version>
         <embedded-cassandra.version>3.0.0.RC2</embedded-cassandra.version>
         <java-driver-core.version>4.2.0</java-driver-core.version>
+        <nexus.url>https://oss.sonatype.org</nexus.url>
     </properties>
 
     <dependencyManagement>
@@ -124,6 +125,9 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-deploy-plugin</artifactId>
                     <version>2.8.2</version>
+                    <configuration>
+                        <skip>true</skip>
+                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -195,6 +199,27 @@
                             <distributionManagement>remove</distributionManagement>
                             <repositories>remove</repositories>
                         </pomElements>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.sonatype.plugins</groupId>
+                    <artifactId>nexus-staging-maven-plugin</artifactId>
+                    <version>1.6.8</version>
+                    <executions>
+                        <execution>
+                            <id>default-deploy</id>
+                            <phase>deploy</phase>
+                            <goals>
+                                <goal>deploy</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <configuration>
+                        <serverId>sonatype</serverId>
+                        <nexusUrl>${nexus.url}</nexusUrl>
+                        <stagingDescription>Embedded Cassandra Project ${project.version}</stagingDescription>
+                        <altStagingDirectory>${session.executionRootDirectory}/target/</altStagingDirectory>
+                        <stagingProgressTimeoutMinutes>10</stagingProgressTimeoutMinutes>
                     </configuration>
                 </plugin>
             </plugins>
@@ -325,14 +350,14 @@
             </build>
             <distributionManagement>
                 <snapshotRepository>
-                    <id>sonatype-nexus-snapshots</id>
+                    <id>sonatype</id>
                     <name>Sonatype Nexus Snapshots</name>
-                    <url>${sonatype.nexus.snapshots}</url>
+                    <url>${nexus.url}/content/repositories/snapshots/</url>
                 </snapshotRepository>
                 <repository>
-                    <id>sonatype-nexus-staging</id>
-                    <name>Nexus Release Repository</name>
-                    <url>${sonatype.nexus.staging}</url>
+                    <id>sonatype</id>
+                    <name>Sonatype Nexus Releases</name>
+                    <url>${nexus.url}/service/local/staging/deploy/maven2/</url>
                 </repository>
             </distributionManagement>
         </profile>
