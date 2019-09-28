@@ -48,10 +48,6 @@ fi
 
 VCS_RELEASE_TAG="${RELEASE_VERSION}"
 
-if [ -z "${GIT_REMOTE}" ]; then
-  abort "'git config remote.origin.url' is not present"
-fi
-
 if [ "$(git rev-parse -q --verify "refs/tags/${VCS_RELEASE_TAG}")" ]; then
   abort "A tag '${VCS_RELEASE_TAG}' already exists. Use 'git tag -d ${VCS_RELEASE_TAG}' to delete a tag."
 fi
