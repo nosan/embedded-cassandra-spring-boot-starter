@@ -16,6 +16,8 @@
 
 package com.github.nosan.boot.autoconfigure.embedded.cassandra;
 
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -39,6 +41,11 @@ import com.github.nosan.embedded.cassandra.api.Cassandra;
 public class EmbeddedCassandraProperties {
 
 	/**
+	 * CQL script resource references.
+	 */
+	private final List<String> scripts = new ArrayList<>();
+
+	/**
 	 * Environment variables that should be passed to Cassandra's process.
 	 */
 	private final Map<String, Object> environmentVariables = new LinkedHashMap<>();
@@ -59,6 +66,11 @@ public class EmbeddedCassandraProperties {
 	private final Map<String, Object> configProperties = new LinkedHashMap<>();
 
 	/**
+	 * CQL scripts encoding.
+	 */
+	private Charset scriptsEncoding = StandardCharsets.UTF_8;
+
+	/**
 	 * Whether the root user is able to start Cassandra or not.
 	 */
 	private boolean rootAllowed = true;
@@ -74,7 +86,7 @@ public class EmbeddedCassandraProperties {
 	private boolean registerShutdownHook = false;
 
 	/**
-	 * Whether Cassandra properties such as 'embedded.cassandra.port' should be exposed as System Properties or not.
+	 * Whether Cassandra properties such as 'embedded.cassandra.port' should be added to Environment.
 	 */
 	private boolean exposeProperties = true;
 
@@ -134,7 +146,7 @@ public class EmbeddedCassandraProperties {
 	 * Cassandra's native transport port.
 	 */
 	@Nullable
-	private Integer port;
+	private Integer port = 0;
 
 	/**
 	 * Cassandra's native transport ssl port.
@@ -146,13 +158,13 @@ public class EmbeddedCassandraProperties {
 	 * Cassandra's rpc port.
 	 */
 	@Nullable
-	private Integer rpcPort;
+	private Integer rpcPort = 0;
 
 	/**
 	 * Cassandra's storage port.
 	 */
 	@Nullable
-	private Integer storagePort;
+	private Integer storagePort = 0;
 
 	/**
 	 * Cassandra's storage ssl port.
@@ -164,7 +176,19 @@ public class EmbeddedCassandraProperties {
 	 * Cassandra's jmx local port.
 	 */
 	@Nullable
-	private Integer jmxLocalPort;
+	private Integer jmxLocalPort = 0;
+
+	public List<String> getScripts() {
+		return this.scripts;
+	}
+
+	public Charset getScriptsEncoding() {
+		return this.scriptsEncoding;
+	}
+
+	public void setScriptsEncoding(Charset scriptsEncoding) {
+		this.scriptsEncoding = scriptsEncoding;
+	}
 
 	public Map<String, Object> getEnvironmentVariables() {
 		return this.environmentVariables;

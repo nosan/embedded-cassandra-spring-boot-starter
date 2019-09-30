@@ -16,36 +16,19 @@
 
 package com.github.nosan.boot.autoconfigure.embedded.cassandra;
 
-import java.time.Duration;
-
-import com.datastax.driver.core.Cluster;
-import com.datastax.driver.core.Session;
-import com.datastax.oss.driver.api.core.CqlSession;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.boot.autoconfigure.AbstractDependsOnBeanFactoryPostProcessor;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.data.cassandra.CassandraDataAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.context.properties.PropertyMapper;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.lang.Nullable;
-import org.springframework.util.ClassUtils;
+import org.springframework.context.annotation.Import;
 
-import com.github.nosan.embedded.cassandra.EmbeddedCassandraFactory;
 import com.github.nosan.embedded.cassandra.api.Cassandra;
-import com.github.nosan.embedded.cassandra.api.CassandraFactory;
-import com.github.nosan.embedded.cassandra.api.CassandraFactoryCustomizer;
-import com.github.nosan.embedded.cassandra.artifact.Artifact;
-import com.github.nosan.embedded.cassandra.commons.io.SpringResource;
+import com.github.nosan.embedded.cassandra.api.connection.CassandraConnection;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for an embedded {@link Cassandra}.
@@ -55,148 +38,22 @@ import com.github.nosan.embedded.cassandra.commons.io.SpringResource;
  */
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(EmbeddedCassandraProperties.class)
-@AutoConfigureBefore({CassandraAutoConfiguration.class, CassandraDataAutoConfiguration.class})
-@ConditionalOnClass(Cassandra.class)
+@AutoConfigureBefore(CassandraAutoConfiguration.class)
+@ConditionalOnClass({Cassandra.class, CassandraConnection.class})
+@Import({EmbeddedCassandraConfiguration.class, EmbeddedCassandraConnectionConfiguration.class})
 public class EmbeddedCassandraAutoConfiguration {
 
-	@ConditionalOnMissingBean
-	@Bean(initMethod = "start", destroyMethod = "stop")
-	public Cassandra embeddedCassandra(CassandraFactory embeddedCassandraFactory) {
-		return embeddedCassandraFactory.create();
+	@Bean
+	static EmbeddedCassandraInitializerBeanPostProcessor embeddedCassandraInitializerBeanPostProcessor(
+			ApplicationContext applicationContext) {
+		return new EmbeddedCassandraInitializerBeanPostProcessor(applicationContext);
 	}
 
-	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass(EmbeddedCassandraFactory.class)
-	static class EmbeddedCassandraConfiguration {
-
-		@Bean
-		@ConditionalOnMissingBean
-		CassandraFactory embeddedCassandraFactory(EmbeddedCassandraProperties properties,
-				ObjectProvider<CassandraFactoryCustomizer<? super EmbeddedCassandraFactory>> customizers) {
-
-			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-
-			EmbeddedCassandraFactory cassandraFactory = new EmbeddedCassandraFactory();
-			cassandraFactory.getEnvironmentVariables().putAll(properties.getEnvironmentVariables());
-			cassandraFactory.getSystemProperties().putAll(properties.getSystemProperties());
-			cassandraFactory.getConfigProperties().putAll(properties.getConfigProperties());
-			cassandraFactory.getJvmOptions().addAll(properties.getJvmOptions());
-			cassandraFactory.setDaemon(properties.isDaemon());
-			cassandraFactory.setRegisterShutdownHook(properties.isRegisterShutdownHook());
-			cassandraFactory.setRootAllowed(properties.isRootAllowed());
-			cassandraFactory.setExposeProperties(properties.isExposeProperties());
-
-			map.from(properties::getVersion).whenHasText().as(Artifact::ofVersion).to(cassandraFactory::setArtifact);
-			map.from(properties::getLogger).whenHasText().as(LoggerFactory::getLogger).to(cassandraFactory::setLogger);
-			map.from(properties::getName).whenHasText().to(cassandraFactory::setName);
-
-			map.from(properties::getJavaHome).to(cassandraFactory::setJavaHome);
-			map.from(properties::getWorkingDirectory).to(cassandraFactory::setWorkingDirectory);
-
-			map.from(properties::getTimeout).whenNot(Duration::isNegative).whenNot(Duration::isZero)
-					.to(cassandraFactory::setTimeout);
-
-			map.from(properties::getPort).to(cassandraFactory::setPort);
-			map.from(properties::getSslPort).to(cassandraFactory::setSslPort);
-			map.from(properties::getRpcPort).to(cassandraFactory::setRpcPort);
-			map.from(properties::getStoragePort).to(cassandraFactory::setStoragePort);
-			map.from(properties::getSslStoragePort).to(cassandraFactory::setSslStoragePort);
-			map.from(properties::getJmxLocalPort).to(cassandraFactory::setJmxLocalPort);
-
-			map.from(properties::getConfig).as(SpringResource::new).to(cassandraFactory::setConfig);
-			map.from(properties::getTopologyConfig).as(SpringResource::new).to(cassandraFactory::setTopologyConfig);
-			map.from(properties::getRackConfig).as(SpringResource::new).to(cassandraFactory::setRackConfig);
-
-			customizers.orderedStream().forEach(customizer -> customizer.customize(cassandraFactory));
-
-			return cassandraFactory;
-		}
-
-	}
-
-	/**
-	 * Additional configuration to ensure that driver classes beans depend on {@link Cassandra} bean.
-	 */
-	@Configuration(proxyBeanMethods = false)
-	@Conditional(EmbeddedCassandraDependsOnCondition.class)
-	static class EmbeddedCassandraDependsOnConfiguration {
-
-		/**
-		 * Additional configuration to ensure that {@link CqlSession} bean depends on {@link Cassandra} bean.
-		 */
-		@Configuration(proxyBeanMethods = false)
-		@ConditionalOnClass(CqlSession.class)
-		static class EmbeddedCassandraCqlSessionDependsOnConfiguration {
-
-			@Bean
-			static CassandraDependsOnBeanFactoryPostProcessor cassandraCqlSessionDependsOnBeanFactoryPostProcessor() {
-				return new CassandraDependsOnBeanFactoryPostProcessor(CqlSession.class, null);
-			}
-
-		}
-
-		/**
-		 * Additional configuration to ensure that {@link Cluster} and {@link Session} beans depend on {@link Cassandra}
-		 * bean.
-		 */
-		@Configuration(proxyBeanMethods = false)
-		@ConditionalOnClass(Cluster.class)
-		static class EmbeddedCassandraClusterDependsOnConfiguration {
-
-			@Bean
-			static CassandraDependsOnBeanFactoryPostProcessor cassandraClusterDependsOnBeanFactoryPostProcessor() {
-				return new CassandraDependsOnBeanFactoryPostProcessor(Cluster.class,
-						getFactoryBeanClass("org.springframework.data.cassandra.config.CassandraClusterFactoryBean"));
-			}
-
-			@Bean
-			static CassandraDependsOnBeanFactoryPostProcessor cassandraSessionDependsOnBeanFactoryPostProcessor() {
-				return new CassandraDependsOnBeanFactoryPostProcessor(Session.class, getFactoryBeanClass(
-						"org.springframework.data.cassandra.config.CassandraCqlSessionFactoryBean"));
-			}
-
-			@Nullable
-			@SuppressWarnings("unchecked")
-			private static Class<? extends FactoryBean<?>> getFactoryBeanClass(String name) {
-				try {
-					return (Class<? extends FactoryBean<?>>) ClassUtils.forName(name,
-							EmbeddedCassandraClusterDependsOnConfiguration.class.getClassLoader());
-				}
-				catch (ClassNotFoundException ex) {
-					return null;
-				}
-			}
-
-		}
-
-		private static class CassandraDependsOnBeanFactoryPostProcessor
-				extends AbstractDependsOnBeanFactoryPostProcessor {
-
-			CassandraDependsOnBeanFactoryPostProcessor(Class<?> beanClass,
-					@Nullable Class<? extends FactoryBean<?>> factoryBeanClass) {
-				super(beanClass, factoryBeanClass, Cassandra.class);
-			}
-
-		}
-
-	}
-
-	static class EmbeddedCassandraDependsOnCondition extends AnyNestedCondition {
-
-		EmbeddedCassandraDependsOnCondition() {
-			super(ConfigurationPhase.PARSE_CONFIGURATION);
-		}
-
-		@ConditionalOnClass(Cluster.class)
-		static class OnCluster {
-
-		}
-
-		@ConditionalOnClass(CqlSession.class)
-		static class OnCqlSession {
-
-		}
-
+	@Bean
+	EmbeddedCassandraInitializer embeddedCassandraInitializer(ObjectProvider<CassandraConnection> cassandraConnections,
+			ObjectProvider<Cassandra> cassandras, EmbeddedCassandraProperties properties,
+			ApplicationContext applicationContext) {
+		return new EmbeddedCassandraInitializer(properties, applicationContext, cassandraConnections, cassandras);
 	}
 
 }

@@ -45,6 +45,7 @@ import com.github.nosan.embedded.cassandra.api.Cassandra;
 import com.github.nosan.embedded.cassandra.api.CassandraFactory;
 import com.github.nosan.embedded.cassandra.api.CassandraFactoryCustomizer;
 import com.github.nosan.embedded.cassandra.api.Version;
+import com.github.nosan.embedded.cassandra.api.connection.CassandraConnection;
 import com.github.nosan.embedded.cassandra.artifact.Artifact;
 import com.github.nosan.embedded.cassandra.artifact.RemoteArtifact;
 import com.github.nosan.embedded.cassandra.commons.io.Resource;
@@ -69,7 +70,6 @@ class EmbeddedCassandraAutoConfigurationTests {
 						"com.github.nosan.embedded.cassandra.config-properties.start_rpc=true",
 						"com.github.nosan.embedded.cassandra.daemon=true",
 						"com.github.nosan.embedded.cassandra.environment-variables.JVM_OPTS=-Xmx512m",
-						"com.github.nosan.embedded.cassandra.expose-properties=false",
 						"com.github.nosan.embedded.cassandra.java-home=target/java",
 						"com.github.nosan.embedded.cassandra.jmx-local-port=7199",
 						"com.github.nosan.embedded.cassandra.jvm-options=-Xmx256m",
@@ -98,7 +98,6 @@ class EmbeddedCassandraAutoConfigurationTests {
 					assertThat(cassandraFactory.isDaemon()).isTrue();
 					assertThat(cassandraFactory.isRegisterShutdownHook()).isTrue();
 					assertThat(cassandraFactory.isRootAllowed()).isFalse();
-					assertThat(cassandraFactory.isExposeProperties()).isFalse();
 					assertThat(cassandraFactory.getEnvironmentVariables()).containsEntry("JVM_OPTS", "-Xmx512m");
 					assertThat(cassandraFactory.getSystemProperties()).containsEntry("cassandra.start_rpc", "true");
 					assertThat(cassandraFactory.getJavaHome()).isEqualTo(Paths.get("target/java"));
@@ -124,6 +123,25 @@ class EmbeddedCassandraAutoConfigurationTests {
 
 				});
 
+	}
+
+	@Test
+	void configureCqlScripts() {
+		this.runner.withConfiguration(AutoConfigurations.of(CassandraAutoConfiguration.class))
+				.withPropertyValues("com.github.nosan.embedded.cassandra.scripts=classpath:schema.cql",
+						"spring.data.cassandra.port=${embedded.cassandra.port}",
+						"spring.data.cassandra.contact-points=${embedded.cassandra.address}",
+						"spring.data.cassandra.keyspace-name=test")
+				.run(context -> assertThat(context).hasNotFailed());
+	}
+
+	@Test
+	void configureEmbeddedConnection() {
+		this.runner.run(context -> {
+			assertThat(context).hasSingleBean(Cassandra.class).hasSingleBean(CassandraConnection.class);
+			CassandraConnection connection = context.getBean(CassandraConnection.class);
+			connection.execute("SELECT now() FROM system.local;");
+		});
 	}
 
 	@Test
@@ -163,19 +181,6 @@ class EmbeddedCassandraAutoConfigurationTests {
 	void usingClusterFactoryBean() {
 		this.runner.withUserConfiguration(ClusterFactoryBeanConfiguration.class).run(context -> {
 			assertThat(context).hasSingleBean(Cassandra.class).hasSingleBean(Cluster.class);
-			Cluster cluster = context.getBean(Cluster.class);
-			try (Session session = cluster.connect()) {
-				session.execute("SELECT now() FROM system.local;");
-			}
-		});
-	}
-
-	@Test
-	void usingCustomCassandra() {
-		this.runner.withUserConfiguration(CustomCassandraConfiguration.class,
-				ClusterConfiguration.class).run(context -> {
-			assertThat(context).hasSingleBean(Cassandra.class).hasSingleBean(Cluster.class).hasBean("customCassandra");
-			assertThat(context.getBean("customCassandra")).isInstanceOf(Cassandra.class);
 			Cluster cluster = context.getBean(Cluster.class);
 			try (Session session = cluster.connect()) {
 				session.execute("SELECT now() FROM system.local;");
@@ -245,16 +250,6 @@ class EmbeddedCassandraAutoConfigurationTests {
 			factoryBean.setPort(port);
 			factoryBean.setContactPoints(address);
 			return factoryBean;
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class CustomCassandraConfiguration {
-
-		@Bean(initMethod = "start", destroyMethod = "stop")
-		Cassandra customCassandra() {
-			return new EmbeddedCassandraFactory().create();
 		}
 
 	}
