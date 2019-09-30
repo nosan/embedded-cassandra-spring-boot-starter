@@ -21,15 +21,10 @@ import java.time.Duration;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import com.datastax.driver.core.Cluster;
-import com.datastax.driver.core.Session;
-import com.datastax.oss.driver.api.core.CqlSession;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.boot.autoconfigure.AbstractDependsOnBeanFactoryPostProcessor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
@@ -37,14 +32,11 @@ import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
-import org.springframework.lang.Nullable;
-import org.springframework.util.ClassUtils;
 import org.yaml.snakeyaml.Yaml;
 
 import com.github.nosan.embedded.cassandra.EmbeddedCassandraFactory;
@@ -162,73 +154,6 @@ class EmbeddedCassandraConfiguration {
 			customizers.orderedStream().forEach(customizer -> customizer.customize(cassandraFactory));
 
 			return cassandraFactory;
-		}
-
-	}
-
-	/**
-	 * Additional configuration to ensure that driver classes beans depend on {@link Cassandra} bean.
-	 */
-	@Configuration(proxyBeanMethods = false)
-	@Conditional(OnCassandraAnyClientCondition.class)
-	static class CassandraClientsDependsOnEmbeddedCassandraConfiguration {
-
-		/**
-		 * Additional configuration to ensure that {@link CqlSession} bean depends on {@link Cassandra} bean.
-		 */
-		@Configuration(proxyBeanMethods = false)
-		@ConditionalOnClass(CqlSession.class)
-		static class EmbeddedCassandraCqlSessionDependsOnConfiguration {
-
-			@Bean
-			static CassandraDependsOnBeanFactoryPostProcessor cassandraCqlSessionDependsOnBeanFactoryPostProcessor() {
-				return new CassandraDependsOnBeanFactoryPostProcessor(CqlSession.class, null);
-			}
-
-		}
-
-		/**
-		 * Additional configuration to ensure that {@link Cluster} and {@link Session} beans depend on {@link Cassandra}
-		 * bean.
-		 */
-		@Configuration(proxyBeanMethods = false)
-		@ConditionalOnClass(Cluster.class)
-		static class EmbeddedCassandraClusterDependsOnConfiguration {
-
-			@Bean
-			static CassandraDependsOnBeanFactoryPostProcessor cassandraClusterDependsOnBeanFactoryPostProcessor() {
-				return new CassandraDependsOnBeanFactoryPostProcessor(Cluster.class,
-						getFactoryBeanClass("org.springframework.data.cassandra.config.CassandraClusterFactoryBean"));
-			}
-
-			@Bean
-			static CassandraDependsOnBeanFactoryPostProcessor cassandraSessionDependsOnBeanFactoryPostProcessor() {
-				return new CassandraDependsOnBeanFactoryPostProcessor(Session.class, getFactoryBeanClass(
-						"org.springframework.data.cassandra.config.CassandraCqlSessionFactoryBean"));
-			}
-
-			@Nullable
-			@SuppressWarnings("unchecked")
-			private static Class<? extends FactoryBean<?>> getFactoryBeanClass(String name) {
-				try {
-					return (Class<? extends FactoryBean<?>>) ClassUtils.forName(name,
-							EmbeddedCassandraClusterDependsOnConfiguration.class.getClassLoader());
-				}
-				catch (Exception ex) {
-					return null;
-				}
-			}
-
-		}
-
-		private static class CassandraDependsOnBeanFactoryPostProcessor
-				extends AbstractDependsOnBeanFactoryPostProcessor {
-
-			CassandraDependsOnBeanFactoryPostProcessor(Class<?> beanClass,
-					@Nullable Class<? extends FactoryBean<?>> factoryBeanClass) {
-				super(beanClass, factoryBeanClass, Cassandra.class);
-			}
-
 		}
 
 	}
