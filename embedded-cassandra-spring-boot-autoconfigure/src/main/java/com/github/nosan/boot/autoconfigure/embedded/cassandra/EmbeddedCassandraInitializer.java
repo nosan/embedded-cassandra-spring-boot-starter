@@ -70,9 +70,8 @@ class EmbeddedCassandraInitializer implements InitializingBean {
 	}
 
 	private void initialize(CqlDataSet dataSet) {
-		List<Cassandra> cassandras = this.cassandras.stream().collect(Collectors.toList());
-		if (cassandras.size() == 1) {
-			Cassandra cassandra = cassandras.get(0);
+		Cassandra cassandra = this.cassandras.getIfUnique();
+		if (cassandra != null) {
 			List<CassandraConnection> connections = this.cassandraConnections.orderedStream()
 					.collect(Collectors.toList());
 			for (CassandraConnection connection : connections) {
