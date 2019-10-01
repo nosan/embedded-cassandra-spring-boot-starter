@@ -3,7 +3,7 @@
     {
       "name": "com.github.nosan.embedded.cassandra.configure-cluster",
       "type": "java.lang.Boolean",
-      "description": "Register a ClusterBuilderCustomizer that configures an auto-configured Cluster with embedded Cassandra properties.",
+      "description": "Registers a ClusterBuilderCustomizer that applies Cassandra properties to the auto-configurable Cluster.",
       "defaultValue": "true"
     }
   ]
