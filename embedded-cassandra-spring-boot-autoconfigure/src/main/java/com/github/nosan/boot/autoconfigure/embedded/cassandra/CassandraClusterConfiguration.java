@@ -24,6 +24,7 @@ import org.springframework.boot.autoconfigure.cassandra.ClusterBuilderCustomizer
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
@@ -43,6 +44,7 @@ import com.github.nosan.embedded.cassandra.api.Cassandra;
 @ConditionalOnClass(Cluster.class)
 @ConditionalOnProperty(prefix = "com.github.nosan.embedded.cassandra", value = "configure-cluster",
 		havingValue = "true", matchIfMissing = true)
+@EnableConfigurationProperties(CassandraProperties.class)
 class CassandraClusterConfiguration {
 
 	@Bean

@@ -24,7 +24,6 @@ import org.springframework.boot.autoconfigure.AbstractDependsOnBeanFactoryPostPr
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfiguration;
-import org.springframework.boot.autoconfigure.cassandra.CassandraProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -47,7 +46,7 @@ import com.github.nosan.embedded.cassandra.api.connection.CassandraConnection;
  * @since 2.0.0
  */
 @Configuration(proxyBeanMethods = false)
-@EnableConfigurationProperties({EmbeddedCassandraProperties.class, CassandraProperties.class})
+@EnableConfigurationProperties(EmbeddedCassandraProperties.class)
 @AutoConfigureBefore(CassandraAutoConfiguration.class)
 @ConditionalOnClass({Cassandra.class, CassandraConnection.class})
 @Import({CassandraConfiguration.class, CassandraConnectionConfiguration.class, CassandraClusterConfiguration.class})
