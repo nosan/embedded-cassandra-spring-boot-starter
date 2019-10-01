@@ -26,18 +26,18 @@ import org.springframework.core.Ordered;
 import com.github.nosan.embedded.cassandra.api.Cassandra;
 
 /**
- * {@link BeanPostProcessor} used to ensure that {@link EmbeddedCassandraInitializer} is initialized as soon as a {@link
+ * {@link BeanPostProcessor} used to ensure that {@link CassandraInitializer} is initialized as soon as a {@link
  * Cassandra} is.
  *
  * @author Dmytro Nosan
  */
-class EmbeddedCassandraInitializerBeanPostProcessor implements BeanPostProcessor, Ordered {
+class CassandraInitializerBeanPostProcessor implements BeanPostProcessor, Ordered {
 
 	private final ApplicationContext applicationContext;
 
 	private final AtomicBoolean initialized = new AtomicBoolean();
 
-	EmbeddedCassandraInitializerBeanPostProcessor(ApplicationContext applicationContext) {
+	CassandraInitializerBeanPostProcessor(ApplicationContext applicationContext) {
 		this.applicationContext = applicationContext;
 	}
 
@@ -49,7 +49,7 @@ class EmbeddedCassandraInitializerBeanPostProcessor implements BeanPostProcessor
 	@Override
 	public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
 		if (bean instanceof Cassandra && this.initialized.compareAndSet(false, true)) {
-			this.applicationContext.getBean(EmbeddedCassandraInitializer.class);
+			this.applicationContext.getBean(CassandraInitializer.class);
 		}
 		return bean;
 	}

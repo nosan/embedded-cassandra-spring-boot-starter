@@ -20,18 +20,19 @@ import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Session;
 import com.datastax.oss.driver.api.core.CqlSession;
 import org.springframework.beans.factory.FactoryBean;
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AbstractDependsOnBeanFactoryPostProcessor;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.lang.Nullable;
 import org.springframework.util.ClassUtils;
 
@@ -48,28 +49,28 @@ import com.github.nosan.embedded.cassandra.api.connection.CassandraConnection;
 @EnableConfigurationProperties(EmbeddedCassandraProperties.class)
 @AutoConfigureBefore(CassandraAutoConfiguration.class)
 @ConditionalOnClass({Cassandra.class, CassandraConnection.class})
-@Import({EmbeddedCassandraConfiguration.class, EmbeddedCassandraConnectionConfiguration.class})
+@Import({CassandraConfiguration.class, CassandraConnectionConfiguration.class})
 public class EmbeddedCassandraAutoConfiguration {
 
 	@Bean
-	static EmbeddedCassandraInitializerBeanPostProcessor embeddedCassandraInitializerBeanPostProcessor(
+	static CassandraInitializerBeanPostProcessor embeddedCassandraInitializerBeanPostProcessor(
 			ApplicationContext applicationContext) {
-		return new EmbeddedCassandraInitializerBeanPostProcessor(applicationContext);
+		return new CassandraInitializerBeanPostProcessor(applicationContext);
 	}
 
 	@Bean
-	EmbeddedCassandraInitializer embeddedCassandraInitializer(ObjectProvider<CassandraConnection> cassandraConnections,
-			ObjectProvider<Cassandra> cassandras, EmbeddedCassandraProperties properties,
-			ApplicationContext applicationContext) {
-		return new EmbeddedCassandraInitializer(properties, applicationContext, cassandraConnections, cassandras);
+	@ConditionalOnSingleCandidate(CassandraConnection.class)
+	CassandraInitializer embeddedCassandraInitializer(EmbeddedCassandraProperties properties,
+			ApplicationContext applicationContext, @Lazy CassandraConnection cassandraConnection) {
+		return new CassandraInitializer(properties, applicationContext, cassandraConnection);
 	}
 
 	/**
 	 * Additional configuration to ensure that driver classes beans depend on {@link Cassandra} bean.
 	 */
 	@Configuration(proxyBeanMethods = false)
-	@Conditional(OnCassandraAnyClientCondition.class)
-	static class CassandraClientsDependsOnEmbeddedCassandraConfiguration {
+	@Conditional(OnAnyCassandraDriverCondition.class)
+	static class CassandraDriversDependsOnEmbeddedCassandraConfiguration {
 
 		/**
 		 * Additional configuration to ensure that {@link CqlSession} bean depends on {@link Cassandra} bean.

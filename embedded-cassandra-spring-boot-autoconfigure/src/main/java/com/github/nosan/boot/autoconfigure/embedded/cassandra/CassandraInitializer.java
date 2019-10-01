@@ -24,10 +24,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.ApplicationContext;
 
 import com.github.nosan.embedded.cassandra.api.Cassandra;
@@ -41,22 +39,19 @@ import com.github.nosan.embedded.cassandra.commons.io.SpringResource;
  *
  * @author Dmytro Nosan
  */
-class EmbeddedCassandraInitializer implements InitializingBean {
+class CassandraInitializer implements InitializingBean {
 
 	private final EmbeddedCassandraProperties properties;
 
 	private final ApplicationContext applicationContext;
 
-	private final ObjectProvider<CassandraConnection> cassandraConnections;
+	private final CassandraConnection connection;
 
-	private final ObjectProvider<Cassandra> cassandras;
-
-	EmbeddedCassandraInitializer(EmbeddedCassandraProperties properties, ApplicationContext applicationContext,
-			ObjectProvider<CassandraConnection> cassandraConnections, ObjectProvider<Cassandra> cassandras) {
+	CassandraInitializer(EmbeddedCassandraProperties properties, ApplicationContext applicationContext,
+			CassandraConnection connection) {
 		this.properties = properties;
 		this.applicationContext = applicationContext;
-		this.cassandraConnections = cassandraConnections;
-		this.cassandras = cassandras;
+		this.connection = connection;
 	}
 
 	@Override
@@ -65,21 +60,8 @@ class EmbeddedCassandraInitializer implements InitializingBean {
 		Charset encoding = properties.getScriptsEncoding();
 		Resource[] resources = getResources(properties.getScripts(), this.applicationContext);
 		if (resources.length > 0) {
-			initialize(CqlDataSet.ofResources(encoding, resources));
-		}
-	}
-
-	private void initialize(CqlDataSet dataSet) {
-		Cassandra cassandra = this.cassandras.getIfUnique();
-		if (cassandra != null) {
-			List<CassandraConnection> connections = this.cassandraConnections.orderedStream()
-					.collect(Collectors.toList());
-			for (CassandraConnection connection : connections) {
-				if (connection.isConnectedTo(cassandra)) {
-					dataSet.forEach(connection::execute);
-					break;
-				}
-			}
+			CqlDataSet dataSet = CqlDataSet.ofResources(encoding, resources);
+			dataSet.forEach(this.connection::execute);
 		}
 	}
 

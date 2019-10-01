@@ -35,21 +35,27 @@ import com.github.nosan.embedded.cassandra.api.connection.DefaultCassandraConnec
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnSingleCandidate(Cassandra.class)
-@Conditional(OnCassandraAnyClientCondition.class)
-class EmbeddedCassandraConnectionConfiguration {
+@Conditional(OnAnyCassandraDriverCondition.class)
+class CassandraConnectionConfiguration {
 
 	@Lazy
 	@Bean(destroyMethod = "close")
+	@ConditionalOnSingleCandidate(CassandraConnectionFactory.class)
 	@ConditionalOnMissingBean
-	CassandraConnection embeddedCassandraConnection(CassandraConnectionFactory embeddedCassandraConnectionFactory,
-			Cassandra embeddedCassandra) {
-		return embeddedCassandraConnectionFactory.create(embeddedCassandra);
+	CassandraConnection embeddedCassandraConnection(CassandraConnectionFactory cassandraConnectionFactory,
+			Cassandra cassandra) {
+		return cassandraConnectionFactory.create(cassandra);
 	}
 
-	@Bean
-	@ConditionalOnMissingBean
-	CassandraConnectionFactory embeddedCassandraConnectionFactory() {
-		return new DefaultCassandraConnectionFactory();
+	@Configuration(proxyBeanMethods = false)
+	static class CassandraConnectionFactoryConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean
+		CassandraConnectionFactory embeddedCassandraConnectionFactory() {
+			return new DefaultCassandraConnectionFactory();
+		}
+
 	}
 
 }

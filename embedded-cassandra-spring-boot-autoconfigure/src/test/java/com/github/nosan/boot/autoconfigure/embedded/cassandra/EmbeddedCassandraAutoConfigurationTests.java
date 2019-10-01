@@ -29,12 +29,10 @@ import org.junit.jupiter.api.condition.JRE;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactoryUtils;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -127,12 +125,10 @@ class EmbeddedCassandraAutoConfigurationTests {
 
 	@Test
 	void configureCqlScripts() {
-		this.runner.withConfiguration(AutoConfigurations.of(CassandraAutoConfiguration.class))
+		this.runner.withUserConfiguration(ClusterConfiguration.class)
 				.withPropertyValues("com.github.nosan.embedded.cassandra.scripts=classpath:schema.cql",
-						"spring.data.cassandra.port=${embedded.cassandra.port}",
-						"spring.data.cassandra.contact-points=${embedded.cassandra.address}",
 						"spring.data.cassandra.keyspace-name=test")
-				.run(context -> assertThat(context).hasNotFailed());
+				.run(context -> context.getBean(Cluster.class).connect("test"));
 	}
 
 	@Test
@@ -141,19 +137,6 @@ class EmbeddedCassandraAutoConfigurationTests {
 			assertThat(context).hasSingleBean(Cassandra.class).hasSingleBean(CassandraConnection.class);
 			CassandraConnection connection = context.getBean(CassandraConnection.class);
 			connection.execute("SELECT now() FROM system.local;");
-		});
-	}
-
-	@Test
-	void usingAutoConfiguredCluster() {
-		this.runner.withConfiguration(AutoConfigurations.of(CassandraAutoConfiguration.class)).
-				withPropertyValues("spring.data.cassandra.port=${embedded.cassandra.port}",
-						"spring.data.cassandra.contact-points=${embedded.cassandra.address}").run(context -> {
-			assertThat(context).hasSingleBean(Cassandra.class).hasSingleBean(Cluster.class);
-			Cluster cluster = context.getBean(Cluster.class);
-			try (Session session = cluster.connect()) {
-				session.execute("SELECT now() FROM system.local;");
-			}
 		});
 	}
 
@@ -218,10 +201,9 @@ class EmbeddedCassandraAutoConfigurationTests {
 	static class ClusterConfiguration {
 
 		@Bean(destroyMethod = "close")
-		Cluster cluster(@Value("${embedded.cassandra.address}") String address,
-				@Value("${embedded.cassandra.port}") int port) {
-			return Cluster.builder().addContactPoints(address).withoutMetrics().withoutJMXReporting()
-					.withPort(port).build();
+		Cluster cluster(Cassandra cassandra) {
+			return Cluster.builder().addContactPoints(cassandra.getAddress()).withoutMetrics().withoutJMXReporting()
+					.withPort(cassandra.getPort()).build();
 		}
 
 	}
@@ -230,10 +212,9 @@ class EmbeddedCassandraAutoConfigurationTests {
 	static class CqlSessionConfiguration {
 
 		@Bean(destroyMethod = "close")
-		CqlSession cqlSession(@Value("${embedded.cassandra.address}") String address,
-				@Value("${embedded.cassandra.port}") int port) {
+		CqlSession cqlSession(Cassandra cassandra) {
 			return CqlSession.builder().withLocalDatacenter("datacenter1").addContactPoint(
-					new InetSocketAddress(address, port)).build();
+					new InetSocketAddress(cassandra.getAddress(), cassandra.getPort())).build();
 		}
 
 	}
@@ -242,13 +223,12 @@ class EmbeddedCassandraAutoConfigurationTests {
 	static class ClusterFactoryBeanConfiguration {
 
 		@Bean
-		CassandraClusterFactoryBean cluster(@Value("${embedded.cassandra.address}") String address,
-				@Value("${embedded.cassandra.port}") int port) {
+		CassandraClusterFactoryBean cluster(Cassandra cassandra) {
 			CassandraClusterFactoryBean factoryBean = new CassandraClusterFactoryBean();
 			factoryBean.setMetricsEnabled(false);
 			factoryBean.setJmxReportingEnabled(false);
-			factoryBean.setPort(port);
-			factoryBean.setContactPoints(address);
+			factoryBean.setPort(cassandra.getPort());
+			factoryBean.setContactPoints(cassandra.getAddress().getHostAddress());
 			return factoryBean;
 		}
 

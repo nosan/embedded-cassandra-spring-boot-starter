@@ -27,9 +27,9 @@ import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
  *
  * @author Dmytro Nosan
  */
-class OnCassandraAnyClientCondition extends AnyNestedCondition {
+class OnAnyCassandraDriverCondition extends AnyNestedCondition {
 
-	OnCassandraAnyClientCondition() {
+	OnAnyCassandraDriverCondition() {
 		super(ConfigurationPhase.PARSE_CONFIGURATION);
 	}
 

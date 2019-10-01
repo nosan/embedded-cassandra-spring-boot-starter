@@ -86,11 +86,6 @@ public class EmbeddedCassandraProperties {
 	private boolean registerShutdownHook = false;
 
 	/**
-	 * Whether Cassandra properties such as 'embedded.cassandra.port' should be added to Environment.
-	 */
-	private boolean exposeProperties = true;
-
-	/**
 	 * Cassandra's logger.
 	 */
 	private String logger = "embeddedCassandra";
@@ -228,14 +223,6 @@ public class EmbeddedCassandraProperties {
 
 	public void setRegisterShutdownHook(boolean registerShutdownHook) {
 		this.registerShutdownHook = registerShutdownHook;
-	}
-
-	public boolean isExposeProperties() {
-		return this.exposeProperties;
-	}
-
-	public void setExposeProperties(boolean exposeProperties) {
-		this.exposeProperties = exposeProperties;
 	}
 
 	public String getLogger() {

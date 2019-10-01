@@ -16,27 +16,20 @@
 
 package com.github.nosan.boot.autoconfigure.embedded.cassandra;
 
-import java.net.InetAddress;
 import java.time.Duration;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.context.properties.PropertyMapper;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
-import org.springframework.core.env.MapPropertySource;
-import org.springframework.core.env.MutablePropertySources;
-import org.springframework.core.env.PropertySource;
 import org.yaml.snakeyaml.Yaml;
 
 import com.github.nosan.embedded.cassandra.EmbeddedCassandraFactory;
@@ -52,58 +45,13 @@ import com.github.nosan.embedded.cassandra.commons.io.SpringResource;
  * @author Dmytro Nosan
  */
 @Configuration(proxyBeanMethods = false)
-class EmbeddedCassandraConfiguration {
+class CassandraConfiguration {
 
-	@Bean(destroyMethod = "stop")
-	@ConditionalOnMissingBean
+	@Bean(initMethod = "start", destroyMethod = "stop")
 	@ConditionalOnSingleCandidate(CassandraFactory.class)
-	Cassandra embeddedCassandra(CassandraFactory embeddedCassandraFactory, ApplicationContext applicationContext,
-			EmbeddedCassandraProperties cassandraProperties) {
-		Cassandra cassandra = embeddedCassandraFactory.create();
-		cassandra.start();
-		if (cassandraProperties.isExposeProperties()) {
-			Map<String, Object> properties = new LinkedHashMap<>();
-			InetAddress address = cassandra.getAddress();
-			if (address != null) {
-				properties.put("embedded.cassandra.address", address.getHostAddress());
-			}
-			int port = cassandra.getPort();
-			if (port != -1) {
-				properties.put("embedded.cassandra.port", port);
-			}
-			int sslPort = cassandra.getSslPort();
-			if (sslPort != -1) {
-				properties.put("embedded.cassandra.ssl-port", sslPort);
-			}
-			int rpcPort = cassandra.getRpcPort();
-			if (rpcPort != -1) {
-				properties.put("embedded.cassandra.rpc-port", rpcPort);
-			}
-			properties.put("embedded.cassandra.version", cassandra.getVersion().toString());
-			setProperties(applicationContext, properties);
-		}
-		return cassandra;
-	}
-
-	private static void setProperties(ApplicationContext applicationContext, Map<String, Object> properties) {
-		if (applicationContext instanceof ConfigurableApplicationContext) {
-			MutablePropertySources propertySources = ((ConfigurableApplicationContext) applicationContext)
-					.getEnvironment().getPropertySources();
-			getProperties(propertySources).putAll(properties);
-		}
-		if (applicationContext.getParent() != null) {
-			setProperties(applicationContext.getParent(), properties);
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	private static Map<String, Object> getProperties(MutablePropertySources sources) {
-		PropertySource<?> propertySource = sources.get("embeddedCassandra");
-		if (propertySource == null) {
-			propertySource = new MapPropertySource("embeddedCassandra", new LinkedHashMap<>());
-			sources.addFirst(propertySource);
-		}
-		return (Map<String, Object>) propertySource.getSource();
+	@ConditionalOnMissingBean
+	Cassandra embeddedCassandra(CassandraFactory cassandraFactory) {
+		return cassandraFactory.create();
 	}
 
 	/**
@@ -111,10 +59,10 @@ class EmbeddedCassandraConfiguration {
 	 */
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass({EmbeddedCassandraFactory.class, Logger.class, Yaml.class, ArchiveEntry.class})
-	static class EmbeddedCassandraFactoryConfiguration {
+	static class CassandraFactoryConfiguration {
 
 		@Bean
-		@Scope("prototype")
+		@Scope(BeanDefinition.SCOPE_PROTOTYPE)
 		@ConditionalOnMissingBean
 		CassandraFactory embeddedCassandraFactory(EmbeddedCassandraProperties properties,
 				ObjectProvider<CassandraFactoryCustomizer<? super EmbeddedCassandraFactory>> customizers) {
