@@ -33,6 +33,8 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfiguration;
+import org.springframework.boot.autoconfigure.cassandra.ClusterBuilderCustomizer;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -121,6 +123,20 @@ class EmbeddedCassandraAutoConfigurationTests {
 
 				});
 
+	}
+
+	@Test
+	void usingAutoConfiguredCluster() {
+		this.runner.withConfiguration(AutoConfigurations.of(CassandraAutoConfiguration.class))
+				.withPropertyValues("com.github.nosan.embedded.cassandra.scripts=classpath:schema.cql",
+						"spring.data.cassandra.keyspace-name=test")
+				.run(context -> context.getBean(Cluster.class).connect("test"));
+	}
+
+	@Test
+	void disableClusterConfiguration() {
+		this.runner.withPropertyValues("com.github.nosan.embedded.cassandra.configure-cluster=false")
+				.run(context -> assertThat(context).doesNotHaveBean(ClusterBuilderCustomizer.class));
 	}
 
 	@Test
