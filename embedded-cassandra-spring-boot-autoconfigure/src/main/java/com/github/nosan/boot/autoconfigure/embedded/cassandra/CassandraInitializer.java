@@ -57,8 +57,8 @@ class CassandraInitializer implements InitializingBean {
 	@Override
 	public void afterPropertiesSet() throws IOException {
 		EmbeddedCassandraProperties properties = this.properties;
-		Charset encoding = properties.getScriptsEncoding();
-		Resource[] resources = getResources(properties.getScripts(), this.applicationContext);
+		Charset encoding = properties.getCqlScriptsEncoding();
+		Resource[] resources = getResources(properties.getCqlScripts(), this.applicationContext);
 		if (resources.length > 0) {
 			CqlDataSet dataSet = CqlDataSet.ofResources(encoding, resources);
 			dataSet.forEach(this.connection::execute);

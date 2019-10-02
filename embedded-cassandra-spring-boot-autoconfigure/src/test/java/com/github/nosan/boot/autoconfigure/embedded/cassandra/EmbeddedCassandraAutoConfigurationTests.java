@@ -128,7 +128,7 @@ class EmbeddedCassandraAutoConfigurationTests {
 	@Test
 	void usingAutoConfiguredCluster() {
 		this.runner.withConfiguration(AutoConfigurations.of(CassandraAutoConfiguration.class))
-				.withPropertyValues("com.github.nosan.embedded.cassandra.scripts=classpath:schema.cql",
+				.withPropertyValues("com.github.nosan.embedded.cassandra.cql-scripts=classpath:schema.cql",
 						"spring.data.cassandra.keyspace-name=test")
 				.run(context -> context.getBean(Cluster.class).connect("test"));
 	}
@@ -142,7 +142,7 @@ class EmbeddedCassandraAutoConfigurationTests {
 	@Test
 	void configureCqlScripts() {
 		this.runner.withUserConfiguration(ClusterConfiguration.class)
-				.withPropertyValues("com.github.nosan.embedded.cassandra.scripts=classpath:schema.cql",
+				.withPropertyValues("com.github.nosan.embedded.cassandra.cql-scripts=classpath:schema.cql",
 						"spring.data.cassandra.keyspace-name=test")
 				.run(context -> context.getBean(Cluster.class).connect("test"));
 	}

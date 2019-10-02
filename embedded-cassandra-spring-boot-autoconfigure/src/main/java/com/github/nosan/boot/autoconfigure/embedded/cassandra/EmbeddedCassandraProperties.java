@@ -43,7 +43,7 @@ public class EmbeddedCassandraProperties {
 	/**
 	 * CQL script resource references.
 	 */
-	private final List<String> scripts = new ArrayList<>();
+	private final List<String> cqlScripts = new ArrayList<>();
 
 	/**
 	 * Environment variables that should be passed to Cassandra's process.
@@ -68,7 +68,7 @@ public class EmbeddedCassandraProperties {
 	/**
 	 * CQL scripts encoding.
 	 */
-	private Charset scriptsEncoding = StandardCharsets.UTF_8;
+	private Charset cqlScriptsEncoding = StandardCharsets.UTF_8;
 
 	/**
 	 * Whether the root user is able to start Cassandra or not.
@@ -173,16 +173,16 @@ public class EmbeddedCassandraProperties {
 	@Nullable
 	private Integer jmxLocalPort = 0;
 
-	public List<String> getScripts() {
-		return this.scripts;
+	public List<String> getCqlScripts() {
+		return this.cqlScripts;
 	}
 
-	public Charset getScriptsEncoding() {
-		return this.scriptsEncoding;
+	public Charset getCqlScriptsEncoding() {
+		return this.cqlScriptsEncoding;
 	}
 
-	public void setScriptsEncoding(Charset scriptsEncoding) {
-		this.scriptsEncoding = scriptsEncoding;
+	public void setCqlScriptsEncoding(Charset cqlScriptsEncoding) {
+		this.cqlScriptsEncoding = cqlScriptsEncoding;
 	}
 
 	public Map<String, Object> getEnvironmentVariables() {
