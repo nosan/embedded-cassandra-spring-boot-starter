@@ -12,6 +12,7 @@ Project is based on:
 
 | embedded-cassandra-spring-boot-starter   |      embedded-cassandra      |  spring-boot-starter |
 |----------|:-------------:|------:|
+| 1.1.2 |  2.0.4 | 2.1.9.RELEASE |
 | 1.1.1 |  2.0.4 | 2.1.8.RELEASE |
 | 1.1.0 |  2.0.4 | 2.1.7.RELEASE |
 | 1.0.3 |  2.0.3 | 2.1.6.RELEASE |
@@ -26,7 +27,7 @@ Project is based on:
     <dependency>
         <groupId>com.github.nosan</groupId>
         <artifactId>embedded-cassandra-spring-boot-starter</artifactId>
-        <version>1.1.1</version>
+        <version>1.1.2</version>
     </dependency>
 </dependencies>
 
