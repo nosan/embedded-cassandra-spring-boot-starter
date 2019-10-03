@@ -9,7 +9,10 @@
     <module name="com.puppycrawl.tools.checkstyle.checks.NewlineAtEndOfFileCheck">
         <property name="lineSeparator" value="lf"/>
     </module>
-
+    <module name="LineLength">
+        <property name="max" value="120"/>
+        <property name="tabWidth" value="4"/>
+    </module>
     <module name="com.puppycrawl.tools.checkstyle.TreeWalker">
         <module name="com.puppycrawl.tools.checkstyle.checks.annotation.AnnotationUseStyleCheck">
             <property name="elementStyle" value="compact"/>
@@ -21,10 +24,6 @@
                       value="false"/>
         </module>
         <module name="OperatorWrap"/>
-        <module name="LineLength">
-            <property name="max" value="120"/>
-            <property name="tabWidth" value="4"/>
-        </module>
 
         <module name="StringLiteralEquality"/>
 
@@ -94,11 +93,7 @@
 
         <module name="com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocTypeCheck">
             <property name="scope" value="package"/>
-            <property name="excludeScope" value="anoninner"/>
             <property name="authorFormat" value=".+\s.+"/>
-        </module>
-        <module name="com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocMethodCheck">
-            <property name="allowMissingJavadoc" value="true"/>
         </module>
         <module name="com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocVariableCheck">
             <property name="scope" value="public"/>
