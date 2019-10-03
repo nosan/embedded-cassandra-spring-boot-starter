@@ -101,6 +101,11 @@
             <plugins>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-site-plugin</artifactId>
+                    <version>3.7.1</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-enforcer-plugin</artifactId>
                     <version>3.0.0-M2</version>
                 </plugin>
@@ -242,7 +247,7 @@
                                     <version>1.8</version>
                                 </requireJavaVersion>
                                 <requireMavenVersion>
-                                    <version>3.5.0</version>
+                                    <version>3.6.0</version>
                                 </requireMavenVersion>
                                 <requireReleaseDeps>
                                     <onlyWhenRelease>true</onlyWhenRelease>
