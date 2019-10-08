@@ -61,7 +61,7 @@ class CassandraInitializer implements InitializingBean {
 		Resource[] resources = getResources(properties.getCqlScripts(), this.applicationContext);
 		if (resources.length > 0) {
 			CqlDataSet dataSet = CqlDataSet.ofResources(encoding, resources);
-			dataSet.forEach(this.connection::execute);
+			dataSet.forEachStatement(this.connection::execute);
 		}
 	}
 
