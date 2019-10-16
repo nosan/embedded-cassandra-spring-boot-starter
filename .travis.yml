@@ -30,7 +30,7 @@ jobs:
     - stage: test
       os: linux
       script:
-        - ./mvnw clean verify -B -V
+        - ./mvnw clean verify -B -U -V
     - os: osx
       script:
-        - ./mvnw clean verify -B -V
+        - ./mvnw clean verify -B -U -V
