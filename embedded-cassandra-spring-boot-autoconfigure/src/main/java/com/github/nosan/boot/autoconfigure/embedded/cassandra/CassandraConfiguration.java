@@ -94,6 +94,7 @@ class CassandraConfiguration {
 			map.from(properties::getStoragePort).to(cassandraFactory::setStoragePort);
 			map.from(properties::getSslStoragePort).to(cassandraFactory::setSslStoragePort);
 			map.from(properties::getJmxLocalPort).to(cassandraFactory::setJmxLocalPort);
+			map.from(properties::getAddress).to(cassandraFactory::setAddress);
 
 			map.from(properties::getConfig).as(SpringResource::new).to(cassandraFactory::setConfig);
 			map.from(properties::getTopologyConfig).as(SpringResource::new).to(cassandraFactory::setTopologyConfig);

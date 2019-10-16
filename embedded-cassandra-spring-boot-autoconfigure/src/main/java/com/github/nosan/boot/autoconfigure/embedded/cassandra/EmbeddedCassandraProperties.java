@@ -16,6 +16,7 @@
 
 package com.github.nosan.boot.autoconfigure.embedded.cassandra;
 
+import java.net.InetAddress;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
@@ -138,6 +139,12 @@ public class EmbeddedCassandraProperties {
 	private Path javaHome;
 
 	/**
+	 * Sets the address.
+	 */
+	@Nullable
+	private InetAddress address;
+
+	/**
 	 * Cassandra's native transport port.
 	 */
 	@Nullable
@@ -177,14 +184,6 @@ public class EmbeddedCassandraProperties {
 		return this.cqlScripts;
 	}
 
-	public Charset getCqlScriptsEncoding() {
-		return this.cqlScriptsEncoding;
-	}
-
-	public void setCqlScriptsEncoding(Charset cqlScriptsEncoding) {
-		this.cqlScriptsEncoding = cqlScriptsEncoding;
-	}
-
 	public Map<String, Object> getEnvironmentVariables() {
 		return this.environmentVariables;
 	}
@@ -199,6 +198,14 @@ public class EmbeddedCassandraProperties {
 
 	public Map<String, Object> getConfigProperties() {
 		return this.configProperties;
+	}
+
+	public Charset getCqlScriptsEncoding() {
+		return this.cqlScriptsEncoding;
+	}
+
+	public void setCqlScriptsEncoding(Charset cqlScriptsEncoding) {
+		this.cqlScriptsEncoding = cqlScriptsEncoding;
 	}
 
 	public boolean isRootAllowed() {
@@ -302,6 +309,15 @@ public class EmbeddedCassandraProperties {
 
 	public void setJavaHome(@Nullable Path javaHome) {
 		this.javaHome = javaHome;
+	}
+
+	@Nullable
+	public InetAddress getAddress() {
+		return this.address;
+	}
+
+	public void setAddress(@Nullable InetAddress address) {
+		this.address = address;
 	}
 
 	@Nullable
