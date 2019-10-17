@@ -1,10 +1,9 @@
 # Embedded Cassandra [Spring Boot Starter] 
 [![Build Status OSX/Linux](https://img.shields.io/travis/nosan/embedded-cassandra-spring-boot/master.svg?logo=travis&logoColor=white&style=flat)](https://travis-ci.org/nosan/embedded-cassandra-spring-boot) [![Build Status Windows](https://img.shields.io/appveyor/ci/nosan/embedded-cassandra-spring-boot/master.svg?logo=appveyor&logoColor=white&style=flat)](https://ci.appveyor.com/project/nosan/embedded-cassandra-spring-boot)
-[![Maven Central](https://img.shields.io/maven-central/v/com.github.nosan/embedded-cassandra-spring-boot-starter.svg)](https://search.maven.org/artifact/com.github.nosan/embedded-cassandra-spring-boot-starter)
 
 This project offers `EmbeddedCassandraAutoConfiguration` for [Embedded Cassandra](https://github.com/nosan/embedded-cassandra). 
 
-You can declare your own `CassandraFactory` or/and `ArtifactFactory` bean(s) to take control of the `Cassandra` 
+You can declare your own `CassandraFactory` bean to take control of the `Cassandra` 
 instances configuration.
 
 
@@ -12,6 +11,7 @@ Project is based on:
 
 | embedded-cassandra-spring-boot-starter   |      embedded-cassandra      |  spring-boot-starter |
 |----------|:-------------:|------:|
+| 2.0.0 |  3.0.0 | 2.2.0.RELEASE |
 | 1.1.2 |  2.0.4 | 2.1.9.RELEASE |
 | 1.1.1 |  2.0.4 | 2.1.8.RELEASE |
 | 1.1.0 |  2.0.4 | 2.1.7.RELEASE |
@@ -27,7 +27,7 @@ Project is based on:
     <dependency>
         <groupId>com.github.nosan</groupId>
         <artifactId>embedded-cassandra-spring-boot-starter</artifactId>
-        <version>1.1.2</version>
+        <version>2.0.0</version>
     </dependency>
 </dependencies>
 
@@ -46,7 +46,7 @@ Also see [CONTRIBUTING.md](CONTRIBUTING.md) if you wish to submit pull requests.
 `Embedded Cassandra [Spring Boot]` can be easily built with the [maven wrapper](https://github.com/takari/maven-wrapper). You also need `JDK 1.8`.
 
 ```bash
-$ ./mvnw clean install
+$ ./mvnw clean verify
 ```
 
 #### License

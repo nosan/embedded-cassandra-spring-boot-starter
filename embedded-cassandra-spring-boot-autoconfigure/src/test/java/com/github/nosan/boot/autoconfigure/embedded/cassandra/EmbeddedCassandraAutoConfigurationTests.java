@@ -16,6 +16,7 @@
 
 package com.github.nosan.boot.autoconfigure.embedded.cassandra;
 
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.file.Paths;
 import java.time.Duration;
@@ -86,6 +87,7 @@ class EmbeddedCassandraAutoConfigurationTests {
 						"com.github.nosan.embedded.cassandra.storage-port=7000",
 						"com.github.nosan.embedded.cassandra.system-properties.[cassandra.start_rpc]=true",
 						"com.github.nosan.embedded.cassandra.timeout=1m",
+						"com.github.nosan.embedded.cassandra.address=localhost",
 						"com.github.nosan.embedded.cassandra.topology-config=classpath:cassandra-topology.properties",
 						"com.github.nosan.embedded.cassandra.working-directory=target/embeddedCassandra")
 				.run(context -> {
@@ -120,7 +122,7 @@ class EmbeddedCassandraAutoConfigurationTests {
 							"cassandra-rack.properties");
 					assertThat(cassandraFactory.getTopologyConfig()).extracting(Resource::getFileName).isEqualTo(
 							"cassandra-topology.properties");
-
+					assertThat(cassandraFactory.getAddress()).isEqualTo(InetAddress.getByName("localhost"));
 				});
 
 	}
