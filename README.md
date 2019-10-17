@@ -6,6 +6,8 @@ This project offers `EmbeddedCassandraAutoConfiguration` for [Embedded Cassandra
 You can declare your own `CassandraFactory` bean to take control of the `Cassandra` 
 instances configuration.
 
+Since **2.0.0**. `EmbeddedCassandraAutoConfiguration` automatically configures `Cluster` to use an embedded Cassandra.
+This behavior can be disabled via `com.github.nosan.embedded.cassandra.configure-cluster: false`.
 
 Project is based on:
 
