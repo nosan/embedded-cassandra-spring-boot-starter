@@ -4,7 +4,7 @@
 This project offers `EmbeddedCassandraAutoConfiguration` for [Embedded Cassandra](https://github.com/nosan/embedded-cassandra). 
 
 You can declare your own `CassandraFactory` bean to take control of the `Cassandra` 
-instances configuration.
+instance configuration.
 
 
 Project is based on:
