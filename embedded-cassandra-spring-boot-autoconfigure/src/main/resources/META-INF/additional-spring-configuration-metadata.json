@@ -6,6 +6,19 @@
       "description": "Registers a ClusterBuilderCustomizer that applies Cassandra properties to the auto-configurable Cluster.",
       "defaultValue": "true"
     }
+  ],
+  "hints": [
+    {
+      "name": "com.github.nosan.embedded.cassandra.cql-scripts",
+      "providers": [
+        {
+          "name": "handle-as",
+          "parameters": {
+            "target": "org.springframework.core.io.Resource"
+          }
+        }
+      ]
+    }
   ]
 }
 
