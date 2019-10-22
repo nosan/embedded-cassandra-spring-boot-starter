@@ -45,7 +45,7 @@ Also see [CONTRIBUTING.md](CONTRIBUTING.md) if you wish to submit pull requests.
 
 #### Samples
 
-https://github.com/nosan/embedded-cassandra-spring-boot-sample
+https://github.com/nosan/embedded-cassandra-spring-boot-samples
 
 #### Build
 
