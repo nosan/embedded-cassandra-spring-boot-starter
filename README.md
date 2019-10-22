@@ -43,6 +43,10 @@ and use predefined `GitHub` templates.
 
 Also see [CONTRIBUTING.md](CONTRIBUTING.md) if you wish to submit pull requests.
 
+#### Samples
+
+https://github.com/nosan/embedded-cassandra-spring-boot-sample
+
 #### Build
 
 `Embedded Cassandra [Spring Boot]` can be easily built with the [maven wrapper](https://github.com/takari/maven-wrapper). You also need `JDK 1.8`.
