@@ -33,7 +33,7 @@ Project is based on:
     <dependency>
         <groupId>com.github.nosan</groupId>
         <artifactId>embedded-cassandra-spring-boot-starter</artifactId>
-        <version>2.0.1</version>
+        <version>2.0.2</version>
     </dependency>
 </dependencies>
 
