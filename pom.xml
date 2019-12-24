@@ -37,8 +37,8 @@
         <java.version>1.8</java.version>
         <assertj.version>3.13.2</assertj.version>
         <checkstyle.version>8.25</checkstyle.version>
-        <spring-boot.version>2.2.1.RELEASE</spring-boot.version>
-        <embedded-cassandra.version>3.0.1</embedded-cassandra.version>
+        <spring-boot.version>2.2.2.RELEASE</spring-boot.version>
+        <embedded-cassandra.version>3.0.2</embedded-cassandra.version>
         <java-driver-core.version>4.2.2</java-driver-core.version>
         <nexus.url>https://oss.sonatype.org</nexus.url>
     </properties>
