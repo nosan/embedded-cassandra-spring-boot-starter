@@ -35,11 +35,11 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
-        <assertj.version>3.13.2</assertj.version>
-        <checkstyle.version>8.25</checkstyle.version>
-        <spring-boot.version>2.2.2.RELEASE</spring-boot.version>
+        <assertj.version>3.14.0</assertj.version>
+        <checkstyle.version>8.28</checkstyle.version>
+        <spring-boot.version>2.2.3.RELEASE</spring-boot.version>
         <embedded-cassandra.version>3.0.2</embedded-cassandra.version>
-        <java-driver-core.version>4.2.2</java-driver-core.version>
+        <java-driver-core.version>4.4.0</java-driver-core.version>
         <nexus.url>https://oss.sonatype.org</nexus.url>
     </properties>
 
