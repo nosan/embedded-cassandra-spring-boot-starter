@@ -106,7 +106,7 @@ public class EmbeddedCassandraProperties {
 	 * Cassandra's version.
 	 */
 	@Nullable
-	private String version = "3.11.4";
+	private String version = "3.11.6";
 
 	/**
 	 * Cassandra's  config.
