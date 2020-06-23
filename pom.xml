@@ -39,7 +39,7 @@
         <checkstyle.version>8.33</checkstyle.version>
         <spring-boot.version>2.2.8.RELEASE</spring-boot.version>
         <embedded-cassandra.version>3.0.3</embedded-cassandra.version>
-        <java-driver-core.version>4.6.1</java-driver-core.version>
+        <java-driver-core.version>4.7.2</java-driver-core.version>
         <nexus.url>https://oss.sonatype.org</nexus.url>
     </properties>
 
