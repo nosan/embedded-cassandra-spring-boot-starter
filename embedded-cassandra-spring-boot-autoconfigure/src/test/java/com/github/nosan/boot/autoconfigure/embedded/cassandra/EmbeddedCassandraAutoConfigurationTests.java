@@ -21,6 +21,7 @@ import com.datastax.oss.driver.api.core.CqlSessionBuilder;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfiguration;
+import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -41,31 +42,25 @@ class EmbeddedCassandraAutoConfigurationTests {
 	@Test
 	void userCqlSessionBean() {
 		this.runner.withUserConfiguration(CqlSessionConfiguration.class)
-				.run(context -> {
-					CqlSession session = context.getBean(CqlSession.class);
-					CqlScript.ofClassPath("schema.cql").forEachStatement(session::execute);
-				});
+				.run(this::execute);
 	}
 
 	@Test
 	void userCqlSessionFactoryBean() {
 		this.runner.withUserConfiguration(CqlSessionFactoryBeanConfiguration.class)
-				.run(context -> {
-					CqlSession session = context.getBean(CqlSession.class);
-					CqlScript.ofClassPath("schema.cql").forEachStatement(session::execute);
-				});
+				.run(this::execute);
 	}
 
 	@Test
 	void autoconfiguredCqlSessionBean() {
 		this.runner.withConfiguration(AutoConfigurations.of(CassandraAutoConfiguration.class))
-				.withPropertyValues("cassandra.embedded.version=4.0-alpha3")
-				.withPropertyValues("cassandra.embedded.system-properties.cassandra.jmx.local.port=0")
 				.withPropertyValues("spring.data.cassandra.local-datacenter=datacenter1")
-				.run(context -> {
-					CqlSession session = context.getBean(CqlSession.class);
-					CqlScript.ofClassPath("schema.cql").forEachStatement(session::execute);
-				});
+				.run(this::execute);
+	}
+
+	private void execute(AssertableApplicationContext context) {
+		CqlSession session = context.getBean(CqlSession.class);
+		CqlScript.ofClassPath("schema.cql").forEachStatement(session::execute);
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -73,7 +68,7 @@ class EmbeddedCassandraAutoConfigurationTests {
 
 		@Bean
 		CqlSession cqlSession() {
-			return new CqlSessionBuilder().build();
+			return new CqlSessionBuilder().withLocalDatacenter("datacenter1").build();
 		}
 
 	}
@@ -83,7 +78,9 @@ class EmbeddedCassandraAutoConfigurationTests {
 
 		@Bean
 		CqlSessionFactoryBean cqlSessionFactoryBean() {
-			return new CqlSessionFactoryBean();
+			CqlSessionFactoryBean cqlSessionFactoryBean = new CqlSessionFactoryBean();
+			cqlSessionFactoryBean.setLocalDatacenter("datacenter1");
+			return cqlSessionFactoryBean;
 		}
 
 	}
