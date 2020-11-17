@@ -18,9 +18,5 @@
  * Auto-configuration for an embedded Cassandra.
  */
 
-@NonNullApi
-@NonNullFields
 package com.github.nosan.boot.autoconfigure.embedded.cassandra;
 
-import org.springframework.lang.NonNullApi;
-import org.springframework.lang.NonNullFields;

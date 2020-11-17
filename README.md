@@ -1,35 +1,29 @@
 # Embedded Cassandra [Spring Boot Starter] 
-[![Build Status OSX/Linux](https://img.shields.io/travis/nosan/embedded-cassandra-spring-boot/master.svg?logo=travis&logoColor=white&style=flat)](https://travis-ci.org/nosan/embedded-cassandra-spring-boot) [![Build Status Windows](https://img.shields.io/appveyor/ci/nosan/embedded-cassandra-spring-boot/master.svg?logo=appveyor&logoColor=white&style=flat)](https://ci.appveyor.com/project/nosan/embedded-cassandra-spring-boot)
 
-This project offers `EmbeddedCassandraAutoConfiguration` for [Embedded Cassandra](https://github.com/nosan/embedded-cassandra). 
+This project includes `AutoConfiguration` for [Embedded Cassandra](https://github.com/nosan/embedded-cassandra).
 
-You can declare your own `CassandraFactory` bean to take control of the `Cassandra` 
-instance configuration.
+To configure CassandraBuilder before it builds Cassandra, the application 
+properties can be used. All properties are started with a prefix `cassandra.embedded`.
 
-Since **2.0.0**. `EmbeddedCassandraAutoConfiguration` automatically configures `Cluster` to use an embedded Cassandra.
-This behavior can be disabled via `com.github.nosan.embedded.cassandra.configure-cluster: false`.
+For example:
 
-Project is based on:
+```properties
+cassandra.embedded.config-properties.native_transport_port=9042
+cassandra.embedded.environment-variables.JAVA_HOME="/Users/me/jdk8"
+cassandra.embedded.system-properties.cassandra.jmx.local.port=7199
+cassandra.embedded.jvm-options=-Xmx512m,-Xms512m
+cassandra.embedded.logger=Cassandra
+cassandra.embedded.name=cassandra-0
+cassandra.embedded.register-shutdown-hook=true
+cassandra.embedded.version=3.11.9
+cassandra.embedded.startup-timeout=90s
+cassandra.embedded.working-directory=target/cassandra-3.11.9
+```
 
-| embedded-cassandra-spring-boot-starter   |      embedded-cassandra      |  spring-boot-starter |
-|----------|:-------------:|------:|
-| 2.0.5 |  3.0.3 | 2.2.5.RELEASE |
-| 2.0.4 |  3.0.2 | 2.2.4.RELEASE |
-| 2.0.3 |  3.0.2 | 2.2.3.RELEASE |
-| 2.0.2 |  3.0.2 | 2.2.2.RELEASE |
-| 2.0.1 |  3.0.1 | 2.2.1.RELEASE |
-| 2.0.0 |  3.0.0 | 2.2.0.RELEASE |
-| 1.1.5 |  2.0.4 | 2.1.12.RELEASE |
-| 1.1.4 |  2.0.4 | 2.1.11.RELEASE |
-| 1.1.3 |  2.0.4 | 2.1.10.RELEASE |
-| 1.1.2 |  2.0.4 | 2.1.9.RELEASE |
-| 1.1.1 |  2.0.4 | 2.1.8.RELEASE |
-| 1.1.0 |  2.0.4 | 2.1.7.RELEASE |
-| 1.0.3 |  2.0.3 | 2.1.6.RELEASE |
-| 1.0.2 |    2.0.2   |   2.1.5.RELEASE |
-| 1.0.1 | 2.0.1 |    2.1.5.RELEASE |
-| 1.0.0 | 2.0.0 |    2.1.4.RELEASE |
- 
+For more advanced builder customizations,you can register an arbitrary number of beans that `implements` CassandraBuilderConfigurator.
+
+You also can register your own CassandraBuilder bean to get a full control of Cassandra bean instantiation.    
+
 #### Maven
 
 ```xml
@@ -37,23 +31,18 @@ Project is based on:
     <dependency>
         <groupId>com.github.nosan</groupId>
         <artifactId>embedded-cassandra-spring-boot-starter</artifactId>
-        <version>2.0.5</version>
+        <version>4.0.0-SNAPSHOT</version>
     </dependency>
 </dependencies>
-
 ```
-
 #### Issues
 
-`Embedded Cassandra [Spring Boot]` uses GitHub's issue tracking system to report bugs and feature
-requests. If you want to raise an issue, please follow this [link](https://github.com/nosan/embedded-cassandra-spring-boot/issues)
+`Embedded Cassandra [Spring Boot Starter]` uses GitHub's issue tracking system to report bugs and feature
+requests. If you want to raise an issue, please follow this [link](https://github.com/nosan/embedded-cassandra-spring-boot-starter/issues)
 and use predefined `GitHub` templates.
 
 Also see [CONTRIBUTING.md](CONTRIBUTING.md) if you wish to submit pull requests.
 
-#### Samples
-
-https://github.com/nosan/embedded-cassandra-spring-boot-samples
 
 #### Build
 

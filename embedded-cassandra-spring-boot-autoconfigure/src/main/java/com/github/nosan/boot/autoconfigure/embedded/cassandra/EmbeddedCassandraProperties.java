@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 the original author or authors.
+ * Copyright 2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,6 @@
 
 package com.github.nosan.boot.autoconfigure.embedded.cassandra;
 
-import java.net.InetAddress;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -27,164 +24,69 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.core.io.Resource;
-import org.springframework.lang.Nullable;
 
-import com.github.nosan.embedded.cassandra.api.Cassandra;
+import com.github.nosan.embedded.cassandra.Cassandra;
 
 /**
  * Configuration properties for an embedded {@link Cassandra}.
  *
  * @author Dmytro Nosan
- * @since 2.0.0
+ * @since 4.0.0
  */
-@ConfigurationProperties(prefix = "com.github.nosan.embedded.cassandra")
+@ConfigurationProperties(prefix = "cassandra.embedded")
 public class EmbeddedCassandraProperties {
 
 	/**
-	 * CQL script resource references.
+	 * Cassandra environment variables.
 	 */
-	private final List<String> cqlScripts = new ArrayList<>();
+	private final Map<String, String> environmentVariables = new LinkedHashMap<>();
 
 	/**
-	 * Environment variables that should be passed to Cassandra's process.
-	 */
-	private final Map<String, Object> environmentVariables = new LinkedHashMap<>();
-
-	/**
-	 * JVM options that should be passed to Cassandra's process.
+	 * Cassandra native Java Virtual Machine (JVM) Options.
 	 */
 	private final List<String> jvmOptions = new ArrayList<>();
 
 	/**
-	 * System properties that should be passed to Cassandra's process.
+	 * Cassandra native Java Virtual Machine (JVM) system parameters.
 	 */
-	private final Map<String, Object> systemProperties = new LinkedHashMap<>();
+	private final Map<String, String> systemProperties = new LinkedHashMap<>();
 
 	/**
-	 * These properties replace any properties in the cassandra.yaml.
+	 * Config properties which should be merged with properties from cassandra.yaml.
 	 */
 	private final Map<String, Object> configProperties = new LinkedHashMap<>();
 
 	/**
-	 * CQL scripts encoding.
+	 * Sets if the created Cassandra should have a shutdown hook registered.
 	 */
-	private Charset cqlScriptsEncoding = StandardCharsets.UTF_8;
+	private Boolean registerShutdownHook;
 
 	/**
-	 * Whether the root user is able to start Cassandra or not.
+	 * Logger which consumes Cassandra STDOUT and STDERR outputs.
 	 */
-	private boolean rootAllowed = true;
+	private String logger;
 
 	/**
-	 * Whether the thread which reads Cassandra's output should be a daemon or not.
+	 * Startup timeout.
 	 */
-	private boolean daemon = false;
+	private Duration startupTimeout;
 
 	/**
-	 * Whether shutdown hook should be registered or not.
+	 * Cassandra instance name.
 	 */
-	private boolean registerShutdownHook = false;
-
-	/**
-	 * Cassandra's logger.
-	 */
-	private String logger = "embeddedCassandra";
-
-	/**
-	 * Cassandra's startup timeout.
-	 */
-	private Duration timeout = Duration.ofSeconds(90);
-
-	/**
-	 * Cassandra's name.
-	 */
-	@Nullable
 	private String name;
 
 	/**
-	 * Cassandra's version.
+	 * Cassandra version.
 	 */
-	@Nullable
-	private String version = "3.11.6";
+	private String version;
 
 	/**
-	 * Cassandra's  config.
+	 * Cassandra working directory.
 	 */
-	@Nullable
-	private Resource config;
-
-	/**
-	 * Cassandra's rack config.
-	 */
-	@Nullable
-	private Resource rackConfig;
-
-	/**
-	 * Cassandra's topology config.
-	 */
-	@Nullable
-	private Resource topologyConfig;
-
-	/**
-	 * Cassandra's working directory.
-	 */
-	@Nullable
 	private Path workingDirectory;
 
-	/**
-	 * Cassandra's java home.
-	 */
-	@Nullable
-	private Path javaHome;
-
-	/**
-	 * Sets the address.
-	 */
-	@Nullable
-	private InetAddress address;
-
-	/**
-	 * Cassandra's native transport port.
-	 */
-	@Nullable
-	private Integer port = 0;
-
-	/**
-	 * Cassandra's native transport ssl port.
-	 */
-	@Nullable
-	private Integer sslPort;
-
-	/**
-	 * Cassandra's rpc port.
-	 */
-	@Nullable
-	private Integer rpcPort = 0;
-
-	/**
-	 * Cassandra's storage port.
-	 */
-	@Nullable
-	private Integer storagePort = 0;
-
-	/**
-	 * Cassandra's storage ssl port.
-	 */
-	@Nullable
-	private Integer sslStoragePort;
-
-	/**
-	 * Cassandra's jmx local port.
-	 */
-	@Nullable
-	private Integer jmxLocalPort = 0;
-
-	public List<String> getCqlScripts() {
-		return this.cqlScripts;
-	}
-
-	public Map<String, Object> getEnvironmentVariables() {
+	public Map<String, String> getEnvironmentVariables() {
 		return this.environmentVariables;
 	}
 
@@ -192,7 +94,7 @@ public class EmbeddedCassandraProperties {
 		return this.jvmOptions;
 	}
 
-	public Map<String, Object> getSystemProperties() {
+	public Map<String, String> getSystemProperties() {
 		return this.systemProperties;
 	}
 
@@ -200,35 +102,11 @@ public class EmbeddedCassandraProperties {
 		return this.configProperties;
 	}
 
-	public Charset getCqlScriptsEncoding() {
-		return this.cqlScriptsEncoding;
-	}
-
-	public void setCqlScriptsEncoding(Charset cqlScriptsEncoding) {
-		this.cqlScriptsEncoding = cqlScriptsEncoding;
-	}
-
-	public boolean isRootAllowed() {
-		return this.rootAllowed;
-	}
-
-	public void setRootAllowed(boolean rootAllowed) {
-		this.rootAllowed = rootAllowed;
-	}
-
-	public boolean isDaemon() {
-		return this.daemon;
-	}
-
-	public void setDaemon(boolean daemon) {
-		this.daemon = daemon;
-	}
-
-	public boolean isRegisterShutdownHook() {
+	public Boolean getRegisterShutdownHook() {
 		return this.registerShutdownHook;
 	}
 
-	public void setRegisterShutdownHook(boolean registerShutdownHook) {
+	public void setRegisterShutdownHook(Boolean registerShutdownHook) {
 		this.registerShutdownHook = registerShutdownHook;
 	}
 
@@ -240,138 +118,36 @@ public class EmbeddedCassandraProperties {
 		this.logger = logger;
 	}
 
-	public Duration getTimeout() {
-		return this.timeout;
+	public Duration getStartupTimeout() {
+		return this.startupTimeout;
 	}
 
-	public void setTimeout(Duration timeout) {
-		this.timeout = timeout;
+	public void setStartupTimeout(Duration startupTimeout) {
+		this.startupTimeout = startupTimeout;
 	}
 
-	@Nullable
 	public String getName() {
 		return this.name;
 	}
 
-	public void setName(@Nullable String name) {
+	public void setName(String name) {
 		this.name = name;
 	}
 
-	@Nullable
 	public String getVersion() {
 		return this.version;
 	}
 
-	public void setVersion(@Nullable String version) {
+	public void setVersion(String version) {
 		this.version = version;
 	}
 
-	@Nullable
-	public Resource getConfig() {
-		return this.config;
-	}
-
-	public void setConfig(@Nullable Resource config) {
-		this.config = config;
-	}
-
-	@Nullable
-	public Resource getRackConfig() {
-		return this.rackConfig;
-	}
-
-	public void setRackConfig(@Nullable Resource rackConfig) {
-		this.rackConfig = rackConfig;
-	}
-
-	@Nullable
-	public Resource getTopologyConfig() {
-		return this.topologyConfig;
-	}
-
-	public void setTopologyConfig(@Nullable Resource topologyConfig) {
-		this.topologyConfig = topologyConfig;
-	}
-
-	@Nullable
 	public Path getWorkingDirectory() {
 		return this.workingDirectory;
 	}
 
-	public void setWorkingDirectory(@Nullable Path workingDirectory) {
+	public void setWorkingDirectory(Path workingDirectory) {
 		this.workingDirectory = workingDirectory;
-	}
-
-	@Nullable
-	public Path getJavaHome() {
-		return this.javaHome;
-	}
-
-	public void setJavaHome(@Nullable Path javaHome) {
-		this.javaHome = javaHome;
-	}
-
-	@Nullable
-	public InetAddress getAddress() {
-		return this.address;
-	}
-
-	public void setAddress(@Nullable InetAddress address) {
-		this.address = address;
-	}
-
-	@Nullable
-	public Integer getPort() {
-		return this.port;
-	}
-
-	public void setPort(@Nullable Integer port) {
-		this.port = port;
-	}
-
-	@Nullable
-	public Integer getSslPort() {
-		return this.sslPort;
-	}
-
-	public void setSslPort(@Nullable Integer sslPort) {
-		this.sslPort = sslPort;
-	}
-
-	@Nullable
-	public Integer getRpcPort() {
-		return this.rpcPort;
-	}
-
-	public void setRpcPort(@Nullable Integer rpcPort) {
-		this.rpcPort = rpcPort;
-	}
-
-	@Nullable
-	public Integer getStoragePort() {
-		return this.storagePort;
-	}
-
-	public void setStoragePort(@Nullable Integer storagePort) {
-		this.storagePort = storagePort;
-	}
-
-	@Nullable
-	public Integer getSslStoragePort() {
-		return this.sslStoragePort;
-	}
-
-	public void setSslStoragePort(@Nullable Integer sslStoragePort) {
-		this.sslStoragePort = sslStoragePort;
-	}
-
-	@Nullable
-	public Integer getJmxLocalPort() {
-		return this.jmxLocalPort;
-	}
-
-	public void setJmxLocalPort(@Nullable Integer jmxLocalPort) {
-		this.jmxLocalPort = jmxLocalPort;
 	}
 
 }

@@ -7,7 +7,7 @@
     <parent>
         <groupId>com.github.nosan</groupId>
         <artifactId>embedded-cassandra-spring-boot-project</artifactId>
-        <version>2.0.6-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>embedded-cassandra-spring-boot-autoconfigure</artifactId>
@@ -16,21 +16,16 @@
 
     <name>Embedded Cassandra Spring Boot Auto-Configure</name>
 
-    <url>https://github.com/nosan/embedded-cassandra-spring-boot</url>
+    <url>https://github.com/nosan/embedded-cassandra-spring-boot-starter</url>
 
     <scm>
-        <url>https://github.com/nosan/embedded-cassandra-spring-boot.git</url>
+        <url>https://github.com/nosan/embedded-cassandra-spring-boot-starter.git</url>
     </scm>
 
     <dependencies>
         <dependency>
             <groupId>com.github.nosan</groupId>
             <artifactId>embedded-cassandra</artifactId>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>com.datastax.oss</groupId>
-            <artifactId>java-driver-core</artifactId>
             <optional>true</optional>
         </dependency>
         <dependency>
@@ -59,13 +54,25 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.sonatype.plugins</groupId>
-                <artifactId>nexus-staging-maven-plugin</artifactId>
-            </plugin>
-        </plugins>
-    </build>
+    <profiles>
+        <profile>
+            <id>deploy</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>flatten-maven-plugin</artifactId>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.sonatype.plugins</groupId>
+                        <artifactId>nexus-staging-maven-plugin</artifactId>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
