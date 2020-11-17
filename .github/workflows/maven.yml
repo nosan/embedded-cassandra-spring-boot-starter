@@ -34,7 +34,7 @@ jobs:
           restore-keys: |
             ${{ matrix.os }}-maven-
       - name: Maven Clean Verify
-        run: mvn -B clean verify
+        run: mvn -B -U clean verify
       - name: Upload to Codecov
         uses: codecov/codecov-action@v1
         with:
