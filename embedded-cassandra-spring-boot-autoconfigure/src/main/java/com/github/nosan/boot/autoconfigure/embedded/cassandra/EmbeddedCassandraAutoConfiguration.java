@@ -16,6 +16,7 @@
 
 package com.github.nosan.boot.autoconfigure.embedded.cassandra;
 
+import java.io.IOException;
 import java.time.Duration;
 
 import com.datastax.oss.driver.api.core.CqlSession;
@@ -32,10 +33,12 @@ import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
+import org.springframework.core.io.Resource;
 
 import com.github.nosan.embedded.cassandra.Cassandra;
 import com.github.nosan.embedded.cassandra.CassandraBuilder;
 import com.github.nosan.embedded.cassandra.CassandraBuilderConfigurator;
+import com.github.nosan.embedded.cassandra.commons.UrlResource;
 import com.github.nosan.embedded.cassandra.commons.logging.Logger;
 
 /**
@@ -60,7 +63,7 @@ public class EmbeddedCassandraAutoConfiguration {
 	@ConditionalOnMissingBean
 	@Scope(BeanDefinition.SCOPE_PROTOTYPE)
 	CassandraBuilder embeddedCassandraBuilder(EmbeddedCassandraProperties properties,
-			ObjectProvider<CassandraBuilderConfigurator> configurators) {
+			ObjectProvider<CassandraBuilderConfigurator> configurators) throws IOException {
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		CassandraBuilder builder = new CassandraBuilder();
 		builder.addEnvironmentVariables(properties.getEnvironmentVariables());
@@ -75,6 +78,10 @@ public class EmbeddedCassandraAutoConfiguration {
 				.to(workingDirectory -> builder.workingDirectory(() -> workingDirectory));
 		map.from(properties::getStartupTimeout).whenNot(Duration::isNegative).whenNot(Duration::isZero)
 				.to(builder::startupTimeout);
+		Resource configFile = properties.getConfigFile();
+		if (configFile != null) {
+			builder.addSystemProperty("cassandra.config", new UrlResource(configFile.getURL()));
+		}
 		configurators.orderedStream().forEach(builder::configure);
 		return builder;
 	}

@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.core.io.Resource;
 
 import com.github.nosan.embedded.cassandra.Cassandra;
 
@@ -85,6 +86,11 @@ public class EmbeddedCassandraProperties {
 	 * Cassandra working directory.
 	 */
 	private Path workingDirectory;
+
+	/**
+	 * Cassandra config file.
+	 */
+	private Resource configFile;
 
 	public Map<String, String> getEnvironmentVariables() {
 		return this.environmentVariables;
@@ -148,6 +154,14 @@ public class EmbeddedCassandraProperties {
 
 	public void setWorkingDirectory(Path workingDirectory) {
 		this.workingDirectory = workingDirectory;
+	}
+
+	public Resource getConfigFile() {
+		return this.configFile;
+	}
+
+	public void setConfigFile(Resource configFile) {
+		this.configFile = configFile;
 	}
 
 }
