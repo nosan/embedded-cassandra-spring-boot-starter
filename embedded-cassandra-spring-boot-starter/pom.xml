@@ -22,8 +22,9 @@
     <scm>
         <url>https://github.com/nosan/embedded-cassandra-spring-boot-starter.git</url>
     </scm>
-
-
+    <properties>
+        <project.root.directory>${project.basedir}/..</project.root.directory>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>com.github.nosan</groupId>
@@ -39,6 +40,37 @@
             <artifactId>spring-boot-starter</artifactId>
         </dependency>
     </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <configuration>
+                    <skipSource>true</skipSource>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifestEntries>
+                            <Spring-Boot-Jar-Type>dependencies-starter</Spring-Boot-Jar-Type>
+                            <Automatic-Module-Name>com.github.nosan.boot.starter.embedded.cassandra
+                            </Automatic-Module-Name>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
     <profiles>
         <profile>
             <id>deploy</id>

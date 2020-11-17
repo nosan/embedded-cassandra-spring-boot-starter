@@ -60,6 +60,7 @@
         <jacoco.version>0.8.6</jacoco.version>
         <jacoco.output.directory>${project.build.directory}/jacoco</jacoco.output.directory>
         <jacoco.report.output.directory>${project.build.directory}/site/jacoco</jacoco.report.output.directory>
+        <project.root.directory>${project.basedir}</project.root.directory>
     </properties>
 
     <dependencyManagement>
@@ -99,6 +100,18 @@
 
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+            <resource>
+                <directory>${project.root.directory}</directory>
+                <targetPath>META-INF</targetPath>
+                <includes>
+                    <include>LICENSE</include>
+                </includes>
+            </resource>
+        </resources>
         <pluginManagement>
             <plugins>
                 <plugin>
