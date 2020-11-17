@@ -39,5 +39,5 @@ jobs:
         uses: codecov/codecov-action@v1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          file: ./target/site/jacoco/jacoco.xml
+          file: ./embedded-cassandra-spring-boot-autoconfigure/target/site/jacoco/jacoco.xml
           flags: ${{ matrix.os }}-jdk${{ matrix.java }}
