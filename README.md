@@ -8,16 +8,16 @@ properties can be used. All properties are started with a prefix `cassandra.embe
 For example:
 
 ```properties
-cassandra.embedded.config-properties.native_transport_port=9042
-cassandra.embedded.environment-variables.JAVA_HOME="/Users/me/jdk8"
-cassandra.embedded.system-properties.cassandra.jmx.local.port=7199
-cassandra.embedded.jvm-options=-Xmx512m,-Xms512m
-cassandra.embedded.logger=Cassandra
-cassandra.embedded.name=cassandra-0
-cassandra.embedded.register-shutdown-hook=true
-cassandra.embedded.version=3.11.9
-cassandra.embedded.startup-timeout=90s
-cassandra.embedded.working-directory=target/cassandra-3.11.9
+cassandra.embedded.config-properties=#Config properties which should be merged with properties from cassandra.yaml.
+cassandra.embedded.environment-variables=#Cassandra environment variables.
+cassandra.embedded.jvm-options=#Cassandra native Java Virtual Machine (JVM) Options.
+cassandra.embedded.logger=#Logger name which consumes Cassandra STDOUT and STDERR outputs.
+cassandra.embedded.name=#Cassandra instance name.
+cassandra.embedded.register-shutdown-hook=#Sets if the created Cassandra should have a shutdown hook registered.
+cassandra.embedded.startup-timeout=#Startup timeout. 
+cassandra.embedded.system-properties=#Cassandra native Java Virtual Machine (JVM) system parameters.
+cassandra.embedded.version=#Cassandra version.
+cassandra.embedded.working-directory=#Cassandra working directory.
 ```
 
 For more advanced builder customizations,you can register an arbitrary number of beans that `implements` CassandraBuilderConfigurator.

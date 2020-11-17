@@ -62,7 +62,7 @@ public class EmbeddedCassandraProperties {
 	private Boolean registerShutdownHook;
 
 	/**
-	 * Logger which consumes Cassandra STDOUT and STDERR outputs.
+	 * Logger name which consumes Cassandra STDOUT and STDERR outputs.
 	 */
 	private String logger;
 

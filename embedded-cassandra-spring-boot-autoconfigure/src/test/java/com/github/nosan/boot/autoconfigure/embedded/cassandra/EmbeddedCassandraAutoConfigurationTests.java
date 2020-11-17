@@ -37,7 +37,8 @@ import com.github.nosan.embedded.cassandra.cql.CqlScript;
 class EmbeddedCassandraAutoConfigurationTests {
 
 	private final ApplicationContextRunner runner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(EmbeddedCassandraAutoConfiguration.class));
+			.withConfiguration(AutoConfigurations.of(EmbeddedCassandraAutoConfiguration.class))
+			.withPropertyValues("cassandra.embedded.startup-timeout=5m");
 
 	@Test
 	void userCqlSessionBean() {
