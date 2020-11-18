@@ -30,7 +30,6 @@ You also can register your own `CassandraBuilder` bean to get a full control of 
 
 `EmbeddedCassandraAutoConfiguration` can be easily used with `@DataCassandraTest` annotation for testing Cassandra repositories,
 just add `@ImportAutoConfiguration(EmbeddedCassandraAutoConfiguration.class)` to your test.
-`
 
 #### Maven
 
