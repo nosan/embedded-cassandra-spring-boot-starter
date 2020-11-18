@@ -16,7 +16,7 @@ cassandra.embedded.config-file=classpath:cassandra.yaml
 #Config properties, that should be merged with properties from cassandra.yaml.
 cassandra.embedded.config-properties.[native_transport_port]=9042
 #Cassandra environment variables.
-cassandra.embedded.environment-variables.JAVA_HOME= 
+cassandra.embedded.environment-variables.JAVA_HOME=~/java8
 #Cassandra native Java Virtual Machine (JVM) Options.
 cassandra.embedded.jvm-options=-Xmx512m
 #Logger name, that consumes Cassandra STDOUT and STDERR outputs.
