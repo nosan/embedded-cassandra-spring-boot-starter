@@ -18,6 +18,7 @@ package com.github.nosan.boot.autoconfigure.embedded.cassandra;
 
 import java.nio.file.Paths;
 import java.time.Duration;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -40,6 +41,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.cassandra.config.CqlSessionFactoryBean;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import com.github.nosan.embedded.cassandra.Cassandra;
 import com.github.nosan.embedded.cassandra.CassandraBuilder;
@@ -75,7 +77,7 @@ class EmbeddedCassandraAutoConfigurationTests {
 						"cassandra.embedded.register-shutdown-hook=false",
 						"cassandra.embedded.system-properties.cassandra.start_rpc=true",
 						"cassandra.embedded.startup-timeout=1m",
-						"cassandra.embedded.resources.[conf/cassandra.yaml]=classpath:cassandra.yaml",
+						"cassandra.embedded.working-directory-resources.[conf/cassandra.yaml]=classpath:cassandra.yaml",
 						"cassandra.embedded.working-directory=target/embeddedCassandra")
 				.run(context -> {
 					assertThat(context).hasSingleBean(CassandraBuilder.class);
@@ -97,6 +99,8 @@ class EmbeddedCassandraAutoConfigurationTests {
 							new UrlResource(new ClassPathResource("cassandra.yaml").getURL()));
 					assertThat(cassandra).hasFieldOrPropertyWithValue("databaseFactory.systemProperties",
 							systemProperties);
+					assertThat((Collection<?>) ReflectionTestUtils.getField(cassandra, "workingDirectoryCustomizers"))
+							.hasSize(1);
 				});
 	}
 

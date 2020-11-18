@@ -60,7 +60,7 @@ public class EmbeddedCassandraProperties {
 	/**
 	 * Additional resources, that should be copied into the working directory.
 	 */
-	private final Map<String, Resource> resources = new LinkedHashMap<>();
+	private final Map<String, Resource> workingDirectoryResources = new LinkedHashMap<>();
 
 	/**
 	 * Sets if the created Cassandra should have a shutdown hook registered.
@@ -169,8 +169,8 @@ public class EmbeddedCassandraProperties {
 		this.configFile = configFile;
 	}
 
-	public Map<String, Resource> getResources() {
-		return this.resources;
+	public Map<String, Resource> getWorkingDirectoryResources() {
+		return this.workingDirectoryResources;
 	}
 
 }

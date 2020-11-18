@@ -83,8 +83,8 @@ public class EmbeddedCassandraAutoConfiguration {
 		if (configFile != null) {
 			builder.configFile(new UrlResource(configFile.getURL()));
 		}
-		for (Map.Entry<String, Resource> entry : properties.getResources().entrySet()) {
-			builder.addResource(new UrlResource(entry.getValue().getURL()), entry.getKey());
+		for (Map.Entry<String, Resource> entry : properties.getWorkingDirectoryResources().entrySet()) {
+			builder.addWorkingDirectoryResource(new UrlResource(entry.getValue().getURL()), entry.getKey());
 		}
 		configurators.orderedStream().forEach(builder::configure);
 		return builder;

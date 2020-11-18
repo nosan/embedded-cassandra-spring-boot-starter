@@ -34,7 +34,7 @@ cassandra.embedded.version=3.11.9
 #Cassandra working directory.
 cassandra.embedded.working-directory=target/cassandra-3.11.9
 #Additional resources, that should be copied into the working directory.
-cassandra.embedded.resources.[conf/cassandra.yaml]=classpath:cassandra.yaml
+cassandra.embedded.working-directory-resources.[conf/cassandra.yaml]=classpath:cassandra.yaml
 ```
 
 For more advanced builder customizations, you can register an arbitrary number of beans that implements `CassandraBuilderConfigurator`.
