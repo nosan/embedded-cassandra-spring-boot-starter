@@ -11,17 +11,30 @@ properties can be used. All properties are started with a prefix `cassandra.embe
 For example:
 
 ```properties
-cassandra.embedded.config-file=#Cassandra config file.
-cassandra.embedded.config-properties=#Config properties which should be merged with properties from cassandra.yaml.
-cassandra.embedded.environment-variables=#Cassandra environment variables.
-cassandra.embedded.jvm-options=#Cassandra native Java Virtual Machine (JVM) Options.
-cassandra.embedded.logger=#Logger name which consumes Cassandra STDOUT and STDERR outputs.
-cassandra.embedded.name=#Cassandra instance name.
-cassandra.embedded.register-shutdown-hook=#Sets if the created Cassandra should have a shutdown hook registered.
-cassandra.embedded.startup-timeout=#Startup timeout.
-cassandra.embedded.system-properties=#Cassandra native Java Virtual Machine (JVM) system parameters.
-cassandra.embedded.version=#Cassandra version.
-cassandra.embedded.working-directory=#Cassandra working directory.
+#Cassandra config file.
+cassandra.embedded.config-file=classpath:cassandra.yaml
+#Config properties, that should be merged with properties from cassandra.yaml.
+cassandra.embedded.config-properties.[native_transport_port]=9042
+#Cassandra environment variables.
+cassandra.embedded.environment-variables.JAVA_HOME= 
+#Cassandra native Java Virtual Machine (JVM) Options.
+cassandra.embedded.jvm-options=-Xmx512m
+#Logger name, that consumes Cassandra STDOUT and STDERR outputs.
+cassandra.embedded.logger=Cassandra
+#Cassandra instance name.
+cassandra.embedded.name=cassandra-0
+#Sets if the created Cassandra should have a shutdown hook registered.
+cassandra.embedded.register-shutdown-hook=true
+#Startup timeout.
+cassandra.embedded.startup-timeout=2m
+#Cassandra native Java Virtual Machine (JVM) system parameters.
+cassandra.embedded.system-properties.[cassandra.jmx.local.port]=7199
+#Cassandra version.
+cassandra.embedded.version=3.11.9
+#Cassandra working directory.
+cassandra.embedded.working-directory=target/cassandra-3.11.9
+#Additional resources, that should be copied into the working directory.
+cassandra.embedded.resources.[conf/cassandra.yaml]=classpath:cassandra.yaml
 ```
 
 For more advanced builder customizations, you can register an arbitrary number of beans that implements `CassandraBuilderConfigurator`.

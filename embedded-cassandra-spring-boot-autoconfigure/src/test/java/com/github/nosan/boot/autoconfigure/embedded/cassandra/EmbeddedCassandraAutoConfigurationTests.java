@@ -75,6 +75,7 @@ class EmbeddedCassandraAutoConfigurationTests {
 						"cassandra.embedded.register-shutdown-hook=false",
 						"cassandra.embedded.system-properties.cassandra.start_rpc=true",
 						"cassandra.embedded.startup-timeout=1m",
+						"cassandra.embedded.resources.[conf/cassandra.yaml]=classpath:cassandra.yaml",
 						"cassandra.embedded.working-directory=target/embeddedCassandra")
 				.run(context -> {
 					assertThat(context).hasSingleBean(CassandraBuilder.class);

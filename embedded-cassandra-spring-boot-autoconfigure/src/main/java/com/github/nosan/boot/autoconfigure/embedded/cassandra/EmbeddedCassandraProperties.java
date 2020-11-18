@@ -53,9 +53,14 @@ public class EmbeddedCassandraProperties {
 	private final Map<String, String> systemProperties = new LinkedHashMap<>();
 
 	/**
-	 * Config properties which should be merged with properties from cassandra.yaml.
+	 * Config properties, that should be merged with properties from cassandra.yaml.
 	 */
 	private final Map<String, Object> configProperties = new LinkedHashMap<>();
+
+	/**
+	 * Additional resources, that should be copied into the working directory.
+	 */
+	private final Map<String, Resource> resources = new LinkedHashMap<>();
 
 	/**
 	 * Sets if the created Cassandra should have a shutdown hook registered.
@@ -63,7 +68,7 @@ public class EmbeddedCassandraProperties {
 	private Boolean registerShutdownHook;
 
 	/**
-	 * Logger name which consumes Cassandra STDOUT and STDERR outputs.
+	 * Logger name, that consumes Cassandra STDOUT and STDERR outputs.
 	 */
 	private String logger;
 
@@ -162,6 +167,10 @@ public class EmbeddedCassandraProperties {
 
 	public void setConfigFile(Resource configFile) {
 		this.configFile = configFile;
+	}
+
+	public Map<String, Resource> getResources() {
+		return this.resources;
 	}
 
 }

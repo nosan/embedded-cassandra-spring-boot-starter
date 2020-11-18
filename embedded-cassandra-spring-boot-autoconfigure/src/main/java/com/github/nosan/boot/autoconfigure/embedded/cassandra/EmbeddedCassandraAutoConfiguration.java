@@ -18,6 +18,7 @@ package com.github.nosan.boot.autoconfigure.embedded.cassandra;
 
 import java.io.IOException;
 import java.time.Duration;
+import java.util.Map;
 
 import com.datastax.oss.driver.api.core.CqlSession;
 import org.springframework.beans.factory.ObjectProvider;
@@ -80,7 +81,10 @@ public class EmbeddedCassandraAutoConfiguration {
 				.to(builder::startupTimeout);
 		Resource configFile = properties.getConfigFile();
 		if (configFile != null) {
-			builder.addSystemProperty("cassandra.config", new UrlResource(configFile.getURL()));
+			builder.configFile(new UrlResource(configFile.getURL()));
+		}
+		for (Map.Entry<String, Resource> entry : properties.getResources().entrySet()) {
+			builder.addResource(new UrlResource(entry.getValue().getURL()), entry.getKey());
 		}
 		configurators.orderedStream().forEach(builder::configure);
 		return builder;
