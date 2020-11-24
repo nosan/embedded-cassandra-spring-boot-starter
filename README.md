@@ -2,6 +2,8 @@
 ![Github CI](https://github.com/nosan/embedded-cassandra-spring-boot-starter/workflows/build/badge.svg)
 [![codecov](https://codecov.io/gh/nosan/embedded-cassandra-spring-boot-starter/branch/master/graph/badge.svg?token=SNW1ICHYXL)](https://codecov.io/gh/nosan/embedded-cassandra-spring-boot-starter)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.nosan/embedded-cassandra-spring-boot-starter/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.nosan/embedded-cassandra-spring-boot-starter/)
+[![Javadocs](https://www.javadoc.io/badge/com.github.nosan/embedded-cassandra-spring-boot-starter.svg)](https://www.javadoc.io/doc/com.github.nosan/embedded-cassandra-spring-boot-starter)
+
 
 This project includes `AutoConfiguration` for [Embedded Cassandra](https://github.com/nosan/embedded-cassandra).
 
@@ -51,7 +53,7 @@ just add `@ImportAutoConfiguration(EmbeddedCassandraAutoConfiguration.class)` to
     <dependency>
         <groupId>com.github.nosan</groupId>
         <artifactId>embedded-cassandra-spring-boot-starter</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
+        <version>4.0.0</version>
     </dependency>
 </dependencies>
 ```
