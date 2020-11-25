@@ -10,6 +10,7 @@
     <packaging>pom</packaging>
 
     <name>Embedded Cassandra Spring Boot Project</name>
+    <description>Embedded Cassandra Spring Boot Project</description>
 
     <licenses>
         <license>
