@@ -9,13 +9,12 @@ This project includes `AutoConfiguration` for [Embedded Cassandra](https://githu
 To configure `CassandraBuilder` before it builds `Cassandra`, the application 
 properties can be used. All properties are started with a prefix `cassandra.embedded`.
 
-For example:
 
 ```properties
 #Cassandra config file.
 cassandra.embedded.config-file=classpath:cassandra.yaml
 #Config properties, that should be merged with properties from cassandra.yaml.
-cassandra.embedded.config-properties.[native_transport_port]=9042
+cassandra.embedded.config-properties.native_transport_port=9042
 #Cassandra environment variables.
 cassandra.embedded.environment-variables.JAVA_HOME=~/java8
 #Cassandra native Java Virtual Machine (JVM) Options.
@@ -38,16 +37,61 @@ cassandra.embedded.working-directory=target/cassandra-3.11.9
 cassandra.embedded.working-directory-resources.[conf/cassandra.yaml]=classpath:cassandra.yaml
 ```
 
-For more advanced builder customizations, you can register an arbitrary number of beans that implements `CassandraBuilderConfigurator`.
+For more advanced builder customizations, you can register an arbitrary number of beans that
+implement `CassandraBuilderConfigurator`.
 
-You also can register your own `CassandraBuilder` bean to get a full control of `Cassandra` bean instantiation.    
+```java
 
-`EmbeddedCassandraAutoConfiguration` can be easily used with `@DataCassandraTest` annotation for testing Cassandra repositories,
-just add `@ImportAutoConfiguration(EmbeddedCassandraAutoConfiguration.class)` to your test.
+@Configuration(proxyBeanMethods = false)
+static class CassandraBuilderConfigurators {
+
+	@Bean
+	CassandraBuilderConfigurator cassandraBuilderConfigurator() {
+		return new CassandraBuilderConfigurator() {
+
+			@Override
+			public void configure(CassandraBuilder builder) {
+				//
+			}
+		};
+	}
+
+}
+```
+
+You also can register your own `CassandraBuilder` bean to get a full control of `Cassandra` bean instantiation.
+
+```java
+
+@Configuration(proxyBeanMethods = false)
+static class CassandraBuilderConfiguration {
+
+	@Bean
+	CassandraBuilder cassandraBuilder() {
+		CassandraBuilder builder = new CassandraBuilder();
+		//configure builder
+		return builder;
+	}
+
+}
+```
+
+`EmbeddedCassandraAutoConfiguration` can be easily used with `@DataCassandraTest` annotation for testing Cassandra
+repositories, just add `@ImportAutoConfiguration(EmbeddedCassandraAutoConfiguration.class)` to your test.
+
+```java
+
+@DataCassandraTest
+@ImportAutoConfiguration(EmbeddedCassandraAutoConfiguration.class)
+class CassandraRepositoriesTest {
+	//
+}
+```
 
 #### Maven
 
 ```xml
+
 <dependencies>
     <dependency>
         <groupId>com.github.nosan</groupId>
