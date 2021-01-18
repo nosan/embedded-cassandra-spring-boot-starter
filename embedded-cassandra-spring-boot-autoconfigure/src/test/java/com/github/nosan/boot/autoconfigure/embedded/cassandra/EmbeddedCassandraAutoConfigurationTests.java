@@ -60,8 +60,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 class EmbeddedCassandraAutoConfigurationTests {
 
 	private final ApplicationContextRunner runner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(EmbeddedCassandraAutoConfiguration.class))
-			.withPropertyValues("cassandra.embedded.startup-timeout=5m");
+			.withPropertyValues("spring.data.cassandra.request.timeout=5s")
+			.withPropertyValues("spring.data.cassandra.connection.connect-timeout=5s")
+			.withPropertyValues("cassandra.embedded.startup-timeout=10m")
+			.withConfiguration(AutoConfigurations.of(EmbeddedCassandraAutoConfiguration.class));
 
 	@Test
 	void configureProperties() {
@@ -136,6 +138,7 @@ class EmbeddedCassandraAutoConfigurationTests {
 			return new CqlSessionBuilder().withLocalDatacenter("datacenter1")
 					.withConfigLoader(DriverConfigLoader.programmaticBuilder()
 							.withInt(DefaultDriverOption.CONNECTION_CONNECT_TIMEOUT, 5000)
+							.withInt(DefaultDriverOption.REQUEST_TIMEOUT, 5000)
 							.build())
 					.build();
 		}
@@ -152,6 +155,7 @@ class EmbeddedCassandraAutoConfigurationTests {
 			cqlSessionFactoryBean.setSessionBuilderConfigurer(
 					sessionBuilder -> sessionBuilder.withConfigLoader(DriverConfigLoader.programmaticBuilder()
 							.withInt(DefaultDriverOption.CONNECTION_CONNECT_TIMEOUT, 5000)
+							.withInt(DefaultDriverOption.REQUEST_TIMEOUT, 5000)
 							.build()));
 			return cqlSessionFactoryBean;
 		}
