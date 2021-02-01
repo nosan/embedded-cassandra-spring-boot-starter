@@ -42,7 +42,7 @@
         <spring-boot.version>2.4.2</spring-boot.version>
         <embedded-cassandra.version>4.0.1</embedded-cassandra.version>
         <nexus.url>https://oss.sonatype.org</nexus.url>
-        <maven-checkstyle-plugin.version>3.1.1</maven-checkstyle-plugin.version>
+        <maven-checkstyle-plugin.version>3.1.2</maven-checkstyle-plugin.version>
         <maven-clean-plugin.version>3.1.0</maven-clean-plugin.version>
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
         <maven-site-plugin.version>3.9.1</maven-site-plugin.version>
