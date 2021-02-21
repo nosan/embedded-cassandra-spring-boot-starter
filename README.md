@@ -1,5 +1,6 @@
 # Embedded Cassandra [Spring Boot Starter] 
 ![Github CI](https://github.com/nosan/embedded-cassandra-spring-boot-starter/workflows/build/badge.svg)
+[![codecov](https://codecov.io/gh/nosan/embedded-cassandra-spring-boot-starter/branch/master/graph/badge.svg?token=SNW1ICHYXL)](https://codecov.io/gh/nosan/embedded-cassandra-spring-boot-starter)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.nosan/embedded-cassandra-spring-boot-starter/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.nosan/embedded-cassandra-spring-boot-starter/)
 [![javadoc](https://javadoc.io/badge2/com.github.nosan/embedded-cassandra-spring-boot-autoconfigure/javadoc.svg)](https://javadoc.io/doc/com.github.nosan/embedded-cassandra-spring-boot-autoconfigure)
 
@@ -96,7 +97,7 @@ class CassandraRepositoriesTest {
     <dependency>
         <groupId>com.github.nosan</groupId>
         <artifactId>embedded-cassandra-spring-boot-starter</artifactId>
-        <version>4.0.1</version>
+        <version>4.0.2</version>
     </dependency>
 </dependencies>
 ```
