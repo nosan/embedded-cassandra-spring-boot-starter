@@ -33,6 +33,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.io.Resource;
 
@@ -52,6 +53,7 @@ import com.github.nosan.embedded.cassandra.commons.logging.Logger;
 @EnableConfigurationProperties(EmbeddedCassandraProperties.class)
 @AutoConfigureBefore(CassandraAutoConfiguration.class)
 @ConditionalOnClass(Cassandra.class)
+@Import(EmbeddedCassandraAutoConfiguration.CassandraCqlSessionDependsOnPostProcessor.class)
 public class EmbeddedCassandraAutoConfiguration {
 
 	@Bean(initMethod = "start", destroyMethod = "stop")
@@ -91,27 +93,14 @@ public class EmbeddedCassandraAutoConfiguration {
 	}
 
 	/**
-	 * Additional configuration to ensure that {@link CqlSession} beans depend on {@link Cassandra} bean.
+	 * BeanPostProcessor to ensure that {@link CqlSession} beans depend on {@link Cassandra} bean.
 	 */
-	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(CqlSession.class)
-	static class CqlSessionDependsOnEmbeddedCassandraConfiguration {
+	static class CassandraCqlSessionDependsOnPostProcessor extends AbstractDependsOnBeanFactoryPostProcessor {
 
-		@Bean
-		static EmbeddedCassandraDependsOnBeanFactoryPostProcessor
-		cqlSessionDependsOnEmbeddedCassandraBeanFactoryPostProcessor() {
-			return new EmbeddedCassandraDependsOnBeanFactoryPostProcessor(CqlSession.class);
-		}
-
-		private static final class EmbeddedCassandraDependsOnBeanFactoryPostProcessor
-				extends AbstractDependsOnBeanFactoryPostProcessor {
-
-			EmbeddedCassandraDependsOnBeanFactoryPostProcessor(Class<?> beanClass) {
-				super(beanClass, Cassandra.class);
-			}
-
+		CassandraCqlSessionDependsOnPostProcessor() {
+			super(CqlSession.class, Cassandra.class);
 		}
 
 	}
-
 }

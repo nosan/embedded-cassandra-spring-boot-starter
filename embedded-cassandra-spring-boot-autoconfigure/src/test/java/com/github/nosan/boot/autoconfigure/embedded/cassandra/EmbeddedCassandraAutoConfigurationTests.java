@@ -37,6 +37,7 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfiguration;
+import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
@@ -63,8 +64,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 class EmbeddedCassandraAutoConfigurationTests {
 
 	private final ApplicationContextRunner runner = new ApplicationContextRunner()
-			.withPropertyValues("spring.data.cassandra.request.timeout=5s")
-			.withPropertyValues("spring.data.cassandra.connection.connect-timeout=5s")
 			.withPropertyValues("cassandra.embedded.startup-timeout=10m")
 			.withConfiguration(AutoConfigurations.of(EmbeddedCassandraAutoConfiguration.class));
 
@@ -124,8 +123,37 @@ class EmbeddedCassandraAutoConfigurationTests {
 	@Test
 	void autoconfiguredCqlSessionBean() {
 		this.runner.withConfiguration(AutoConfigurations.of(CassandraAutoConfiguration.class))
+				.withPropertyValues("spring.data.cassandra.request.timeout=5s")
+				.withPropertyValues("spring.data.cassandra.connection.connect-timeout=5s")
 				.withPropertyValues("spring.data.cassandra.local-datacenter=datacenter1")
 				.run(this::execute);
+	}
+
+	@Test
+	void embeddedCassandraAutoConfiguration() {
+		this.runner.withUserConfiguration(ExcludeCassandraBeanDefinitionRegistryPostProcessor.class)
+				.run(ctx -> assertThat(ctx).hasBean("embeddedCassandraAutoConfiguration"));
+		this.runner.withUserConfiguration(ExcludeCassandraBeanDefinitionRegistryPostProcessor.class)
+				.withClassLoader(new FilteredClassLoader(Cassandra.class))
+				.run(ctx -> assertThat(ctx).doesNotHaveBean("embeddedCassandraAutoConfiguration"));
+	}
+
+	@Test
+	void cassandraCqlSessionDependsOnPostProcessor() {
+		this.runner.withUserConfiguration(ExcludeCassandraBeanDefinitionRegistryPostProcessor.class)
+				.run(ctx -> assertThat(ctx).hasBean(
+						EmbeddedCassandraAutoConfiguration.CassandraCqlSessionDependsOnPostProcessor.class
+								.getTypeName()));
+		this.runner.withClassLoader(new FilteredClassLoader(CqlSession.class))
+				.withUserConfiguration(ExcludeCassandraBeanDefinitionRegistryPostProcessor.class)
+				.run(ctx -> assertThat(ctx).doesNotHaveBean(
+						EmbeddedCassandraAutoConfiguration.CassandraCqlSessionDependsOnPostProcessor.class
+								.getTypeName()));
+		this.runner.withClassLoader(new FilteredClassLoader(Cassandra.class))
+				.withUserConfiguration(ExcludeCassandraBeanDefinitionRegistryPostProcessor.class)
+				.run(ctx -> assertThat(ctx).doesNotHaveBean(
+						EmbeddedCassandraAutoConfiguration.CassandraCqlSessionDependsOnPostProcessor.class
+								.getTypeName()));
 	}
 
 	private void execute(AssertableApplicationContext context) {
