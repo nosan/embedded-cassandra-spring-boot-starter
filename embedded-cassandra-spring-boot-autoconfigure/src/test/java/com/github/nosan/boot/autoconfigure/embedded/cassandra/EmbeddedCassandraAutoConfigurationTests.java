@@ -18,9 +18,11 @@ package com.github.nosan.boot.autoconfigure.embedded.cassandra;
 
 import java.nio.file.Paths;
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 
 import com.datastax.oss.driver.api.core.CqlSession;
@@ -48,6 +50,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import com.github.nosan.embedded.cassandra.Cassandra;
 import com.github.nosan.embedded.cassandra.CassandraBuilder;
+import com.github.nosan.embedded.cassandra.CassandraBuilderConfigurator;
 import com.github.nosan.embedded.cassandra.Version;
 import com.github.nosan.embedded.cassandra.commons.UrlResource;
 import com.github.nosan.embedded.cassandra.commons.logging.Logger;
@@ -83,11 +86,12 @@ class EmbeddedCassandraAutoConfigurationTests {
 						"cassandra.embedded.startup-timeout=1m",
 						"cassandra.embedded.working-directory-resources.[conf/cassandra.yaml]=classpath:cassandra.yaml",
 						"cassandra.embedded.working-directory=target/embeddedCassandra")
+				.withBean(CassandraBuilderConfigurator.class, () -> (builder) -> builder.addJvmOptions("-Xmx1024m"))
 				.run(context -> {
 					assertThat(context).hasSingleBean(CassandraBuilder.class);
 					Cassandra cassandra = context.getBean(CassandraBuilder.class).build();
 					assertThat(cassandra).hasFieldOrPropertyWithValue("databaseFactory.jvmOptions",
-							Collections.singleton("-Xmx256m"));
+							new LinkedHashSet<>(Arrays.asList("-Xmx256m", "-Xmx1024m")));
 					assertThat(cassandra).hasFieldOrPropertyWithValue("logger", Logger.get("MyLogger"));
 					assertThat(cassandra).hasFieldOrPropertyWithValue("name", "MyCassandra");
 					assertThat(cassandra).hasFieldOrPropertyWithValue("version", Version.parse("3.11.3"));
