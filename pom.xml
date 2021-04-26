@@ -38,7 +38,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
-        <checkstyle.version>8.41.1</checkstyle.version>
+        <checkstyle.version>8.42</checkstyle.version>
         <spring-boot.version>2.4.5</spring-boot.version>
         <embedded-cassandra.version>4.0.1</embedded-cassandra.version>
         <nexus.url>https://oss.sonatype.org</nexus.url>
