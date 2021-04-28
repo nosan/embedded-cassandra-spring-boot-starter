@@ -39,6 +39,7 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfiguration;
+import org.springframework.boot.autoconfigure.cassandra.DriverConfigLoaderBuilderCustomizer;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -126,7 +127,8 @@ class EmbeddedCassandraAutoConfigurationTests {
 
 	@Test
 	void autoconfiguredCqlSessionBean() {
-		this.runner.withConfiguration(AutoConfigurations.of(CassandraAutoConfiguration.class))
+		this.runner.withConfiguration(
+				AutoConfigurations.of(CassandraAutoConfiguration.class, DriverBuilderCustomizersConfiguration.class))
 				.withPropertyValues("spring.data.cassandra.request.timeout=5s")
 				.withPropertyValues("spring.data.cassandra.connection.connect-timeout=5s")
 				.withPropertyValues("spring.data.cassandra.local-datacenter=datacenter1")
@@ -174,6 +176,7 @@ class EmbeddedCassandraAutoConfigurationTests {
 					.withConfigLoader(DriverConfigLoader.programmaticBuilder()
 							.withInt(DefaultDriverOption.CONNECTION_CONNECT_TIMEOUT, 5000)
 							.withInt(DefaultDriverOption.REQUEST_TIMEOUT, 5000)
+							.withString(DefaultDriverOption.PROTOCOL_VERSION, "V5")
 							.build())
 					.build();
 		}
@@ -191,8 +194,19 @@ class EmbeddedCassandraAutoConfigurationTests {
 					sessionBuilder -> sessionBuilder.withConfigLoader(DriverConfigLoader.programmaticBuilder()
 							.withInt(DefaultDriverOption.CONNECTION_CONNECT_TIMEOUT, 5000)
 							.withInt(DefaultDriverOption.REQUEST_TIMEOUT, 5000)
+							.withString(DefaultDriverOption.PROTOCOL_VERSION, "V5")
 							.build()));
 			return cqlSessionFactoryBean;
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class DriverBuilderCustomizersConfiguration {
+
+		@Bean
+		DriverConfigLoaderBuilderCustomizer protocolVersionDriverCustomizer() {
+			return builder -> builder.withString(DefaultDriverOption.PROTOCOL_VERSION, "V5");
 		}
 
 	}
