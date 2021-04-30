@@ -68,6 +68,7 @@ You also can register your own `CassandraBuilder` bean to get a full control of 
 static class CassandraBuilderConfiguration {
 
 	@Bean
+	@Scope("prototype")
 	CassandraBuilder cassandraBuilder() {
 		CassandraBuilder builder = new CassandraBuilder();
 		//configure builder
