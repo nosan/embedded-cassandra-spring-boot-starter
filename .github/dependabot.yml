@@ -5,10 +5,5 @@ updates:
   schedule:
     interval: daily
     time: "03:00"
-  open-pull-requests-limit: 99
   assignees:
   - nosan
-  ignore:
-  - dependency-name: com.github.nosan:embedded-cassandra
-    versions:
-    - 4.0.2
