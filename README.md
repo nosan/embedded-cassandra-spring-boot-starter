@@ -121,7 +121,7 @@ $ ./mvnw clean verify
 
 #### License
 
-This project uses [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0)
+This project  is released under the [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0)
 
 ___
 <a href="https://www.buymeacoffee.com/nosan" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/white_img.png" alt="Buy Me A Coffee"></a>
