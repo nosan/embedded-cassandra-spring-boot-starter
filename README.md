@@ -102,6 +102,9 @@ class CassandraRepositoriesTest {
     </dependency>
 </dependencies>
 ```
+
+For other build tools, please use the following [link](https://search.maven.org/artifact/com.github.nosan/embedded-cassandra-spring-boot-starter/4.0.4/jar)
+
 #### Issues
 
 `Embedded Cassandra [Spring Boot Starter]` uses GitHub's issue tracking system to report bugs and feature
