@@ -98,7 +98,7 @@ class CassandraRepositoriesTest {
     <dependency>
         <groupId>com.github.nosan</groupId>
         <artifactId>embedded-cassandra-spring-boot-starter</artifactId>
-        <version>4.0.4</version>
+        <version>4.0.5</version>
     </dependency>
 </dependencies>
 ```
