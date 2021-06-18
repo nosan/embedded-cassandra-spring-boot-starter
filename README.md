@@ -1,15 +1,14 @@
-# Embedded Cassandra [Spring Boot Starter] 
+# Embedded Cassandra [Spring Boot Starter]
+
 ![Github CI](https://github.com/nosan/embedded-cassandra-spring-boot-starter/workflows/build/badge.svg)
 [![codecov](https://codecov.io/gh/nosan/embedded-cassandra-spring-boot-starter/branch/master/graph/badge.svg?token=SNW1ICHYXL)](https://codecov.io/gh/nosan/embedded-cassandra-spring-boot-starter)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.nosan/embedded-cassandra-spring-boot-starter/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.nosan/embedded-cassandra-spring-boot-starter/)
 [![javadoc](https://javadoc.io/badge2/com.github.nosan/embedded-cassandra-spring-boot-autoconfigure/javadoc.svg)](https://javadoc.io/doc/com.github.nosan/embedded-cassandra-spring-boot-autoconfigure)
 
-
 This project includes `AutoConfiguration` for [Embedded Cassandra](https://github.com/nosan/embedded-cassandra).
 
-To configure `CassandraBuilder` before it builds `Cassandra`, the application 
-properties can be used. All properties are started with a prefix `cassandra.embedded`.
-
+To configure `CassandraBuilder` before it builds `Cassandra`, the application properties can be used. All properties are
+started with a prefix `cassandra.embedded`.
 
 ```properties
 #Cassandra config file.
@@ -103,20 +102,22 @@ class CassandraRepositoriesTest {
 </dependencies>
 ```
 
-For other build tools, please use the following [link](https://search.maven.org/artifact/com.github.nosan/embedded-cassandra-spring-boot-starter/4.0.4/jar)
+For other build tools, please use the
+following [link](https://search.maven.org/artifact/com.github.nosan/embedded-cassandra-spring-boot-starter/4.0.5/jar)
 
 #### Issues
 
-`Embedded Cassandra [Spring Boot Starter]` uses GitHub's issue tracking system to report bugs and feature
-requests. If you want to raise an issue, please follow this [link](https://github.com/nosan/embedded-cassandra-spring-boot-starter/issues)
+`Embedded Cassandra [Spring Boot Starter]` uses GitHub's issue tracking system to report bugs and feature requests. If
+you want to raise an issue, please follow
+this [link](https://github.com/nosan/embedded-cassandra-spring-boot-starter/issues)
 and use predefined `GitHub` templates.
 
 Also see [CONTRIBUTING.md](CONTRIBUTING.md) if you wish to submit pull requests.
 
-
 #### Build
 
-`Embedded Cassandra [Spring Boot Starter]` can be easily built with the [maven wrapper](https://github.com/takari/maven-wrapper). You also need `JDK 1.8`.
+`Embedded Cassandra [Spring Boot Starter]` can be easily built with
+the [maven wrapper](https://github.com/takari/maven-wrapper). You also need `JDK 1.8`.
 
 ```bash
 $ ./mvnw clean verify
@@ -124,7 +125,7 @@ $ ./mvnw clean verify
 
 #### License
 
-This project  is released under the [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0)
+This project is released under the [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0)
 
 ___
 <a href="https://www.buymeacoffee.com/nosan" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/white_img.png" alt="Buy Me A Coffee"></a>
