@@ -97,13 +97,13 @@ class CassandraRepositoriesTest {
     <dependency>
         <groupId>com.github.nosan</groupId>
         <artifactId>embedded-cassandra-spring-boot-starter</artifactId>
-        <version>4.0.5</version>
+        <version>4.0.6</version>
     </dependency>
 </dependencies>
 ```
 
 For other build tools, please use the
-following [link](https://search.maven.org/artifact/com.github.nosan/embedded-cassandra-spring-boot-starter/4.0.5/jar)
+following [link](https://search.maven.org/artifact/com.github.nosan/embedded-cassandra-spring-boot-starter/4.0.6/jar)
 
 #### Issues
 
