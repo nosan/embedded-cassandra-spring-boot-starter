@@ -4,11 +4,15 @@ on:
   push:
     branches: [ master, PR ]
     paths-ignore:
+      - '**.adoc'
       - '**.md'
+      - '.github/**'
   pull_request:
     branches: [ master ]
     paths-ignore:
+      - '**.adoc'
       - '**.md'
+      - '.github/**'
 
 jobs:
   analyze:
