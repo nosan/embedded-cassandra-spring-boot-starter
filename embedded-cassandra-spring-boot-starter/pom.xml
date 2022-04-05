@@ -7,7 +7,7 @@
     <parent>
         <groupId>com.github.nosan</groupId>
         <artifactId>embedded-cassandra-spring-boot-project</artifactId>
-        <version>4.1.1</version>
+        <version>4.1.2-SNAPSHOT</version>
     </parent>
 
     <artifactId>embedded-cassandra-spring-boot-starter</artifactId>
