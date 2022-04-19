@@ -89,6 +89,11 @@ class CassandraRepositoriesTest {
 }
 ```
 
+#### Schema Migration
+
+Embedded Cassandra [Spring Boot Starter] does not support CQL script migration, for this purpose you may try to use the following projects:
+- https://github.com/patka/cassandra-migration
+
 #### Maven
 
 ```xml
